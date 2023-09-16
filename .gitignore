@@ -2,13 +2,13 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
-Painters These Days/[Ll]ibrary/
-Painters These Days/[Tt]emp/
-Painters These Days/[Oo]bj/
-Painters These Days/[Bb]uild/
-Painters These Days/[Bb]uilds/
-Painters These Days/[Ll]ogs/
-Painters These Days/[Uu]ser[Ss]ettings/
+PaintersTheseDays/[Ll]ibrary/
+PaintersTheseDays/[Tt]emp/
+PaintersTheseDays/[Oo]bj/
+PaintersTheseDays/[Bb]uild/
+PaintersTheseDays/[Bb]uilds/
+PaintersTheseDays/[Ll]ogs/
+PaintersTheseDays/[Uu]ser[Ss]ettings/
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
