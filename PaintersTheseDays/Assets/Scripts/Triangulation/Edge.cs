@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class Edge
 {
-    public Vector2 v { get; private set; }
-    public Vector2 w  { get; private set; }
+    public Vertex v { get; private set; }
+    public Vertex w  { get; private set; }
     public bool isBad;
 
-    public Edge(Vector2 v, Vector2 w)
+    public Edge(Vertex v, Vertex w)
     {
         this.v = v;
         this.w = w;

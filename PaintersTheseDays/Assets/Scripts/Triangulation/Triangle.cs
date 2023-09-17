@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class Triangle
 {
-    public Vector2 a { get; private set; }
-    public Vector2 b { get; private set; }
-    public Vector2 c { get; private set; }
+    public Vertex a { get; private set; }
+    public Vertex b { get; private set; }
+    public Vertex c { get; private set; }
     public bool isBad = false;
     private Vector2 circumcircleCenter;
     private bool calculateCenter = false;
 
-    public Triangle(Vector2 a, Vector2 b, Vector2 c)
+    public Triangle(Vertex a, Vertex b, Vertex c)
     {
         this.a = a;
         this.b = b;
@@ -40,15 +40,22 @@ public class Triangle
         return base.GetHashCode();
     }
 
-    public bool ContainsVertex(Vector2 v)
+    public bool ContainsVertex(Vertex v)
     {
         return a == v || b == v || c == v;
+    }
+
+    public bool IsAdjacent(Triangle t)
+    {
+        return ContainsVertex(t.a) && ContainsVertex(t.b) ||
+               ContainsVertex(t.b) && ContainsVertex(t.c) ||
+               ContainsVertex(t.c) && ContainsVertex(t.a);
     }
 
     public bool CircumcircleContains(Vector2 v)
     {
         Vector2 circum = GetCircumcircleCenter();
-        float circum_radius = (circum - a).sqrMagnitude;
+        float circum_radius = (circum - a.pos).sqrMagnitude;
         float dist = (circum - v).sqrMagnitude;
         return dist <= circum_radius;
     }
@@ -57,16 +64,16 @@ public class Triangle
     {
         if (!calculateCenter)
         {
-            float ab = a.sqrMagnitude;
-            float cd = b.sqrMagnitude;
-            float ef = c.sqrMagnitude;
+            float ab = a.pos.sqrMagnitude;
+            float cd = b.pos.sqrMagnitude;
+            float ef = c.pos.sqrMagnitude;
 
-            float ax = a.x;
-            float ay = a.y;
-            float bx = b.x;
-            float by = b.y;
-            float cx = c.x;
-            float cy = c.y;
+            float ax = a.pos.x;
+            float ay = a.pos.y;
+            float bx = b.pos.x;
+            float by = b.pos.y;
+            float cx = c.pos.x;
+            float cy = c.pos.y;
 
             float circum_x = (ab * (cy - by) + cd * (ay - cy) + ef * (by - ay)) / (ax * (cy - by) + bx * (ay - cy) + cx * (by - ay));
             float circum_y = (ab * (cx - bx) + cd * (ax - cx) + ef * (bx - ax)) / (ay * (cx - bx) + by * (ax - cx) + cy * (bx - ax));

@@ -1,59 +1,70 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public class TriangulationTest : MonoBehaviour
 {
-    [SerializeField] Material meshMaterial;
+    [SerializeField] Material[] meshMaterials;
     DelaunayTriangulation tr = new DelaunayTriangulation();
-    List<Vector2> _vertices = new List<Vector2>();
+    List<Vertex> _vertices = new List<Vertex>();
     List<Triangle> _triangles = new List<Triangle>();
+    List<int[]> tris = new List<int[]>();
     void Start()
     {
+        Vector2 canvasLimit = new Vector2(8f, 10f);
         for (int i = 0; i < 100; i++)
         {
-            _vertices.Add(new Vector2(Random.Range(-10f, 10f), Random.Range(-8f, 8f)));
+            _vertices.Add(new Vertex(i, new Vector2(Random.Range(-canvasLimit.x, canvasLimit.x), Random.Range(-canvasLimit.y, canvasLimit.y))));
         }
+        _vertices.Add(new Vertex(_vertices.Count, canvasLimit * new Vector2(1f, 1f)));
+        _vertices.Add(new Vertex(_vertices.Count, canvasLimit * new Vector2(-1f, 1f)));
+        _vertices.Add(new Vertex(_vertices.Count, canvasLimit * new Vector2(-1f, -1f)));
+        _vertices.Add(new Vertex(_vertices.Count, canvasLimit * new Vector2(1f, -1f)));
+        _vertices.Add(new Vertex(_vertices.Count, canvasLimit * new Vector2(0f, 1f)));
+        _vertices.Add(new Vertex(_vertices.Count, canvasLimit * new Vector2(-1f, 0f)));
+        _vertices.Add(new Vertex(_vertices.Count, canvasLimit * new Vector2(0f, -1f)));
+        _vertices.Add(new Vertex(_vertices.Count, canvasLimit * new Vector2(1f, 0f)));
+
         _triangles = tr.Triangulate(_vertices);
-        foreach(Triangle t in _triangles)
-        {
-            Debug.Log(t.a + " - " + t.b + " - " + t.c);
-        }
+        tr.GenerateAdjacency();
 
         gameObject.AddComponent<MeshFilter>();
         gameObject.AddComponent<MeshRenderer>();
         Mesh mesh = GetComponent<MeshFilter>().mesh;
 
         mesh.Clear();
-        GetComponent<MeshRenderer>().material = meshMaterial;
 
         List<Vector3> meshVertices = new List<Vector3>();
         List<Vector2> meshUVs = new List<Vector2>();
         List<int> meshTriangles = new List<int>();
-        for (int i = 0; i < _triangles.Count; i++)
+        for (int i = 0; i < _vertices.Count; i++)
         {
-            Random.seed = (int)((_triangles[i].a.x + _triangles[i].a.y) * 100000);
-            float z = Random.Range(0f, 10f);
-            meshVertices.Add(new Vector3(_triangles[i].a.x, _triangles[i].a.y, z));
-            Random.seed = (int)((_triangles[i].b.x + _triangles[i].b.y) * 100000);
-            z = Random.Range(0f, 10f);
-            meshVertices.Add(new Vector3(_triangles[i].b.x, _triangles[i].b.y, z));
-            Random.seed = (int)((_triangles[i].c.x + _triangles[i].c.y) * 100000);
-            z = Random.Range(0f, 10f);
-            meshVertices.Add(new Vector3(_triangles[i].c.x, _triangles[i].c.y, z));
-            meshTriangles.Add(i * 3);
-            meshTriangles.Add(i * 3 + 1);
-            meshTriangles.Add(i * 3 + 2);
-            meshUVs.Add(_triangles[i].a);
-            meshUVs.Add(_triangles[i].b);
-            meshUVs.Add(_triangles[i].c);
+            float z = 0;
+            meshVertices.Add(new Vector3(_vertices[i].pos.x, _vertices[i].pos.y, z));
+            meshUVs.Add(_vertices[i].pos);
         }
 
         mesh.vertices = meshVertices.ToArray();
         mesh.uv = meshUVs.ToArray();
-        mesh.triangles = meshTriangles.ToArray();
+
+        mesh.subMeshCount = _triangles.Count;
+        Material[] materials = new Material[_triangles.Count];
+        for (int i = 0; i < _triangles.Count; i++)
+        {
+            tris.Add(new int[3]);
+            tris[i][0] = (_triangles[i].a.id);
+            tris[i][1] = (_triangles[i].b.id);
+            tris[i][2] = (_triangles[i].c.id);
+            mesh.SetTriangles(tris[i], i);
+            materials[i] = meshMaterials[Random.Range(0, meshMaterials.Length)];
+        }
+        GetComponent<MeshRenderer>().materials = materials;
+
+        mesh.RecalculateNormals();
     }
     void Update()
     {
