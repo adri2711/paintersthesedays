@@ -6,7 +6,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class DelaunayTriangulation : MonoBehaviour
+public class DelaunayTriangulation
 {
     public List<Triangle> _triangles { get; private set; } = new List<Triangle>();
     public List<Edge> _edges { get; private set; } = new List<Edge>();
