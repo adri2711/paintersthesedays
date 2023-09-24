@@ -35,4 +35,5 @@ public interface ICharacterSignals
     ///     A stream with stepped events. Triggered when the camera has moved one stride length.
     /// </summary>
     IObservable<Unit> Stepped { get; }
+    IObservable<Unit> PlacedCanvas { get; }
 }

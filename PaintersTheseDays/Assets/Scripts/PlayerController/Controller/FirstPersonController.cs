@@ -26,6 +26,9 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     public IObservable<Unit> Stepped => _stepped;
     private Subject<Unit> _stepped;
 
+    public IObservable<Unit> PlacedCanvas => _placedCanvas;
+    private Subject<Unit> _placedCanvas;
+
     #endregion
 
     #region Configuration
@@ -55,6 +58,7 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
 
     public bool canMove = true;
     public bool canMoveCamera = true;
+    public bool canPlaceCanvas = true;
 
     private int _jumpsRemaining = 1;
     private bool _jumpPressed = false;
@@ -73,9 +77,14 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         _jumped = new Subject<Unit>().AddTo(this);
         _landed = new Subject<Unit>().AddTo(this);
         _stepped = new Subject<Unit>().AddTo(this);
+        _placedCanvas = new Subject<Unit>().AddTo(this);
     }
     private void Start()
     {
+        if (canPlaceCanvas)
+        {
+            HandleCanvasPlacement();
+        }
         if (canMove)
         {
             HandleMovement();
@@ -105,7 +114,18 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
             _jumpCoyoteT = MathF.Max(_jumpCoyoteT - Time.deltaTime, 0f);
         }
     }
+    private void HandleCanvasPlacement()
+    {
+        var placeCanvasLatch = LatchObservables.Latch(this.UpdateAsObservable(), _playerControllerInput.PlaceCanvas, false);
 
+        _playerControllerInput.PlaceCanvas
+            .Zip(placeCanvasLatch, (m, j) => new Unit())
+            .Subscribe(i =>
+            {
+                Debug.Log("Placed");
+                _placedCanvas.OnNext(Unit.Default);
+            }).AddTo(this);
+    }
     private void HandleMovement()
     {
         _characterController.Move(-stickToGroundForceMagnitude * transform.up);

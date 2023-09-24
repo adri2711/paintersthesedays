@@ -138,6 +138,7 @@ GameObject:
   - component: {fileID: 330585548}
   - component: {fileID: 330585549}
   - component: {fileID: 330585550}
+  - component: {fileID: 330585551}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -379,6 +380,19 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &330585551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e197c8e42ec8201438c25e9795b079e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvasPlacementDistance: 3
 --- !u!1 &400373490
 GameObject:
   m_ObjectHideFlags: 0
@@ -1257,7 +1271,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkSpeed: 10
   runSpeed: 17.5
-  jumps: 3
+  jumps: 1
   jumpForceMagnitude: 21
   jumpCooldown: 0.2
   jumpCoyoteTime: 0.2
@@ -1269,6 +1283,7 @@ MonoBehaviour:
   maxViewAngle: 85
   canMove: 1
   canMoveCamera: 1
+  canPlaceCanvas: 1
 --- !u!114 &1494605406
 MonoBehaviour:
   m_ObjectHideFlags: 0

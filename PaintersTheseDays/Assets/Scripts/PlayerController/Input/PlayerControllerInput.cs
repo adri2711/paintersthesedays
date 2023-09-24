@@ -31,4 +31,5 @@ public abstract class PlayerControllerInput : MonoBehaviour
     ///     Interaction type: continuous axes.
     /// </summary>
     public abstract IObservable<Vector2> Look { get; }
+    public abstract IObservable<Unit> PlaceCanvas { get; }
 }

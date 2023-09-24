@@ -23,6 +23,9 @@ public class InputActionBasedFirstPersonControllerInput : PlayerControllerInput
     public override IObservable<Vector2> Look => _look;
     private IObservable<Vector2> _look;
 
+    public override IObservable<Unit> PlaceCanvas => _placeCanvas;
+    private Subject<Unit> _placeCanvas;
+
     #endregion
 
     #region Configuration
@@ -72,5 +75,9 @@ public class InputActionBasedFirstPersonControllerInput : PlayerControllerInput
             {
                 return _controls.Character.Look.ReadValue<Vector2>();
             });
+
+        //Place Canvas:
+        _placeCanvas = new Subject<Unit>().AddTo(this);
+        _controls.Character.PlaceCanvas.performed += context => _placeCanvas.OnNext(Unit.Default);
     }
 }
