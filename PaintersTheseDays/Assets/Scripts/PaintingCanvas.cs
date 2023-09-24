@@ -12,15 +12,18 @@ public class PaintingCanvas : MonoBehaviour
     List<Triangle> triangles = new List<Triangle>();
     List<int[]> meshTriangles = new List<int[]>();
     List<Vector2> meshUVs = new List<Vector2>();
-    [SerializeField] Material[] meshMaterials;
+    Material[] meshMaterials;
 
-    Vector2 size = new Vector2(7f, 11.27f);
+    public float width = 2f;
+    public float resolution = 1.61f;
+    Vector2 size;
     int subdivisions = 11;
     float vertexVariation = 0.75f;
     private void Start()
     {
         gameObject.AddComponent<MeshFilter>();
         gameObject.AddComponent<MeshRenderer>();
+        meshMaterials = Resources.LoadAll<Material>("Materials/Paint");
         GenerateVertices();
         GenerateTriangles();
         GenerateMesh();
@@ -39,6 +42,7 @@ public class PaintingCanvas : MonoBehaviour
 
     private void GenerateVertices()
     {
+        size = new Vector2(width, width * resolution);
         vertices = new List<Vertex>();
         int subdivisionsY = (int)(subdivisions * size.y / size.x);
         for (int i = 0; i <= subdivisions; i++)
