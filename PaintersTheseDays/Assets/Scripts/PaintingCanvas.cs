@@ -99,7 +99,7 @@ public class PaintingCanvas : MonoBehaviour
             meshTriangles[i][1] = (triangles[i].b.id);
             meshTriangles[i][2] = (triangles[i].c.id);
             mesh.SetTriangles(meshTriangles[i], i);
-            materials[i] = meshMaterials[Random.Range(0, meshMaterials.Length)];
+            materials[i] = meshMaterials[Random.Range(1, meshMaterials.Length)];
         }
         GetComponent<MeshRenderer>().materials = materials;
 

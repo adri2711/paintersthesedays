@@ -9,6 +9,9 @@ public class PaintingTest : MonoBehaviour
     private ICharacterSignals _characterSignals;
     private Camera _camera;
 
+    public int iterations = 3;
+    public float sizeIncrease = 5f;
+
     void Start()
     {
         _characterSignalsInterfaceTarget = transform.parent.parent.gameObject;
@@ -24,23 +27,26 @@ public class PaintingTest : MonoBehaviour
             {
                 HashSet<int> brushTris = new HashSet<int>();
 
-                int iterations = 2;
+                brushTris.Add(SelectTriangle(Input.mousePosition));
                 for (int i = 0; i < iterations; i++)
                 {
-                    SelectTriangle(Input.mousePosition);
-                    int points = (int)((iterations - 1) * Mathf.Pow(2, iterations + 1));
-                    Vector3 off = new Vector2(1f, 0f);
+                    int points = (int)((iterations - 1) * Mathf.Pow(2, i + 1));
+                    
                     for (int j = 0; j < points; j++)
                     {
-                        SelectTriangle(Input.mousePosition + off);
+                        float angle = j * 360f / points;
+                        Vector3 brushOffset = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * sizeIncrease * i;
+                        brushTris.Add(SelectTriangle(Input.mousePosition + brushOffset));
                     }
                 }
 
                 foreach (int t in brushTris)
                 {
-                    _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>().currentActiveCanvas.SetTriangleMaterial(t, 0);
+                    if (t >= 0)
+                    {
+                        _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>().currentActiveCanvas.SetTriangleMaterial(t, 0);
+                    }
                 }
-                
             }
         }
     }
@@ -50,14 +56,12 @@ public class PaintingTest : MonoBehaviour
         RaycastHit hit;
         if (!Physics.Raycast(_camera.ScreenPointToRay(originPos), out hit))
         {
-            Debug.Log("no hit");
             return -1;
         }
 
         MeshCollider meshCollider = hit.collider as MeshCollider;
         if (meshCollider == null || meshCollider.sharedMesh == null)
         {
-            Debug.Log("no collider or no shared mesh whatever that means");
             return -1;
         }
 
