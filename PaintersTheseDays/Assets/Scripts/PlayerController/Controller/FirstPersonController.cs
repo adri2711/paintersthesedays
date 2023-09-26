@@ -65,6 +65,8 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     private float _jumpT = 0;
     private float _jumpCoyoteT = 0;
 
+    public PaintingCanvas currentActiveCanvas { get; private set; }
+
     private void Awake()
     {
         _playerControllerInput = GetComponent<PlayerControllerInput>();
@@ -81,24 +83,10 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     }
     private void Start()
     {
-        if (canPlaceCanvas)
-        {
             HandleCanvasPlacement();
-        }
-        if (canMove)
-        {
             HandleMovement();
             HandleSteppedEvents();
-        }
-        if (canMoveCamera)
-        {
-            Cursor.visible = false;
             HandleLook();
-        }
-        else
-        {
-            Cursor.visible = true;
-        }
     }
 
     private void Update()
@@ -114,6 +102,25 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
             _jumpCoyoteT = MathF.Max(_jumpCoyoteT - Time.deltaTime, 0f);
         }
     }
+    public void EnableCanvasMode(PaintingCanvas canvas)
+    {
+        if (canvas == null) return;
+        canPlaceCanvas = false;
+        canMove = false;
+        canMoveCamera = false;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        currentActiveCanvas = canvas;
+    }
+    public void DisableCanvasMode()
+    {
+        canPlaceCanvas = true;
+        canMove = true;
+        canMoveCamera = true;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        currentActiveCanvas = null;
+    }
     private void HandleCanvasPlacement()
     {
         var placeCanvasLatch = LatchObservables.Latch(this.UpdateAsObservable(), _playerControllerInput.PlaceCanvas, false);
@@ -122,8 +129,14 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
             .Zip(placeCanvasLatch, (m, j) => new Unit())
             .Subscribe(i =>
             {
-                Debug.Log("Placed");
-                _placedCanvas.OnNext(Unit.Default);
+                if (canPlaceCanvas)
+                {
+                    _placedCanvas.OnNext(Unit.Default);
+                }
+                else
+                {
+                    DisableCanvasMode();
+                }
             }).AddTo(this);
     }
     private void HandleMovement()
@@ -150,7 +163,7 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
                 float verticalVelocity = 0f;
 
                 // jump while grounded
-                if (_jumpPressed && _jumpT == 0 && _jumpCoyoteT > 0)
+                if (canMove && _jumpPressed && _jumpT == 0 && _jumpCoyoteT > 0)
                 {
                     verticalVelocity = jumpForceMagnitude;
                     _jumped.OnNext(Unit.Default);
@@ -180,7 +193,7 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
                     verticalVelocity = _characterController.velocity.y + gravity * Time.deltaTime * 3.0f;
                 }
                 // grounded
-                else 
+                else
                 {
                     verticalVelocity = -Mathf.Abs(stickToGroundForceMagnitude);
                 }
@@ -239,15 +252,29 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         .Where(v => v != Vector2.zero)
         .Subscribe(inputLook =>
         {
-            // Horizontal look with rotation around the vertical axis, where + means clockwise.
-            var horizontalLook = inputLook.x * Vector3.up * Time.deltaTime * cameraSpeed;
-            transform.localRotation *= Quaternion.Euler(horizontalLook);
+            if (canMoveCamera)
+            {
+                // Horizontal look with rotation around the vertical axis, where + means clockwise.
+                var horizontalLook = inputLook.x * Vector3.up * Time.deltaTime * cameraSpeed;
+                transform.localRotation *= Quaternion.Euler(horizontalLook);
 
-            // Vertical look with rotation around the horizontal axis, where + means upwards.
-            var verticalLook = inputLook.y * Vector3.left * Time.deltaTime * cameraSpeed;
-            var newQ = _camera.transform.localRotation * Quaternion.Euler(verticalLook);
+                // Vertical look with rotation around the horizontal axis, where + means upwards.
+                var verticalLook = inputLook.y * Vector3.left * Time.deltaTime * cameraSpeed;
+                var newQ = _camera.transform.localRotation * Quaternion.Euler(verticalLook);
 
-            _camera.transform.localRotation = RotationTools.ClampRotationAroundXAxis(newQ, -maxViewAngle, -minViewAngle);
+                _camera.transform.localRotation = RotationTools.ClampRotationAroundXAxis(newQ, -maxViewAngle, -minViewAngle);
+            }
+            else
+            {
+                //var horizontalLook = inputLook.x * Vector3.up * Time.deltaTime * cameraSpeed;
+                //var newQX = transform.localRotation * Quaternion.Euler(horizontalLook);
+                //transform.localRotation = RotationTools.ClampRotationAroundYAxis(newQX, -45f, 45f);
+            
+                //var verticalLook = inputLook.y * Vector3.left * Time.deltaTime * cameraSpeed;
+                //var newQ = _camera.transform.localRotation * Quaternion.Euler(verticalLook);
+
+                //_camera.transform.localRotation = RotationTools.ClampRotationAroundXAxis(newQ, -45f, 45f);
+            }
         }).AddTo(this);
     }
     public struct MoveInputData

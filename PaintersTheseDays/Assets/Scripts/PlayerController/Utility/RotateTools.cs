@@ -12,4 +12,14 @@ public static class RotationTools
         euler.x = Mathf.Clamp(euler.x, minAngle, maxAngle);
         return Quaternion.Euler(euler);
     }
+    public static Quaternion ClampRotationAroundYAxis(Quaternion q, float minAngle, float maxAngle)
+    {
+        var euler = q.eulerAngles;
+        if (euler.y > 180)
+        {
+            euler.y -= 360;
+        }
+        euler.y = Mathf.Clamp(euler.y, minAngle, maxAngle);
+        return Quaternion.Euler(euler);
+    }
 }
