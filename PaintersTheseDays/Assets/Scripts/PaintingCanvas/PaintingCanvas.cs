@@ -16,8 +16,8 @@ public class PaintingCanvas : MonoBehaviour
 
     public float width = 2f;
     public float resolution = 1.61f;
+    public int subdivisions = 11;
     Vector2 size;
-    int subdivisions = 11;
     float vertexVariation = 0.75f;
     private void Start()
     {
@@ -99,7 +99,7 @@ public class PaintingCanvas : MonoBehaviour
             meshTriangles[i][1] = (triangles[i].b.id);
             meshTriangles[i][2] = (triangles[i].c.id);
             mesh.SetTriangles(meshTriangles[i], i);
-            materials[i] = meshMaterials[Random.Range(0, meshMaterials.Length)];
+            materials[i] = meshMaterials[Random.Range(1, meshMaterials.Length)];
         }
         GetComponent<MeshRenderer>().materials = materials;
 

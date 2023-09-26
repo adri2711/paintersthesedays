@@ -31,7 +31,8 @@ public class FovEffects : MonoBehaviour
 
         _characterSignals.Moved.Subscribe(w =>
         {
-            if (_characterSignals.IsRunning.Value) {
+            if (_characterSignalsInterfaceTarget.GetComponent<FirstPersonController>().canMove && _characterSignals.IsRunning.Value)
+            {
                 StartSprint();
             }
             else
