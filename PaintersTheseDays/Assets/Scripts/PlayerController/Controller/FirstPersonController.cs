@@ -198,17 +198,20 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
                     verticalVelocity = -Mathf.Abs(stickToGroundForceMagnitude);
                 }
 
-                //// Horizontal Movement ////
-                var currentSpeed = _playerControllerInput.Run.Value ? runSpeed : walkSpeed;
-                var horizontalVelocity = i.Move * currentSpeed; //Calculate velocity (direction * speed).
+                if (canMove)
+                {
+                    //// Horizontal Movement ////
+                    var currentSpeed = _playerControllerInput.Run.Value ? runSpeed : walkSpeed;
+                    var horizontalVelocity = i.Move * currentSpeed; //Calculate velocity (direction * speed).
 
-                // Apply
-                var characterVelocity = transform.TransformVector(new Vector3(
-                    horizontalVelocity.x,
-                    verticalVelocity,
-                    horizontalVelocity.y));
-                var motion = characterVelocity * Time.deltaTime;
-                _characterController.Move(motion);
+                    // Apply
+                    var characterVelocity = transform.TransformVector(new Vector3(
+                        horizontalVelocity.x,
+                        verticalVelocity,
+                        horizontalVelocity.y));
+                    var motion = characterVelocity * Time.deltaTime;
+                    _characterController.Move(motion);
+                }
 
                 //land
                 if (!wasGrounded && _characterController.isGrounded)

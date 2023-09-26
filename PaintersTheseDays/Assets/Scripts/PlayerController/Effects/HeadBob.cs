@@ -34,7 +34,7 @@ public class HeadBob : MonoBehaviour
     {
         var distance = 0f;
         _characterSignals.Moved
-            .Where(w => _characterController.isGrounded)
+            .Where(w => _characterController.GetComponent<FirstPersonController>().canMove && _characterController.isGrounded)
             .Subscribe(w =>
             {
                 // Calculate stride progress.
