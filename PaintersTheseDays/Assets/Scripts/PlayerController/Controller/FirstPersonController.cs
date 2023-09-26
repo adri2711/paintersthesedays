@@ -246,7 +246,14 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
             }
             else
             {
+                var horizontalLook = inputLook.x * Vector3.up * Time.deltaTime * cameraSpeed;
+                var newQX = transform.localRotation * Quaternion.Euler(horizontalLook);
+                transform.localRotation = RotationTools.ClampRotationAroundYAxis(newQX, -45f, 45f);
+            
+                var verticalLook = inputLook.y * Vector3.left * Time.deltaTime * cameraSpeed;
+                var newQ = _camera.transform.localRotation * Quaternion.Euler(verticalLook);
 
+                _camera.transform.localRotation = RotationTools.ClampRotationAroundXAxis(newQ, -45f, 45f);
             }
         }).AddTo(this);
     }

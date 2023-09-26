@@ -52,5 +52,6 @@ public class CanvasPlacer : MonoBehaviour
 
         _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>().canPlaceCanvas = false;
         _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>().canMove = false;
+        _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>().canMoveCamera = false;
     }
 }
