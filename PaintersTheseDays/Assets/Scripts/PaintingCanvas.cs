@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PaintingCanvas : MonoBehaviour
 {
@@ -13,6 +12,7 @@ public class PaintingCanvas : MonoBehaviour
     List<int[]> meshTriangles = new List<int[]>();
     List<Vector2> meshUVs = new List<Vector2>();
     Material[] meshMaterials;
+    Material[] materials;
 
     public float width = 2f;
     public float resolution = 1.61f;
@@ -38,6 +38,12 @@ public class PaintingCanvas : MonoBehaviour
             GenerateTriangles();
             GenerateMesh();
         }
+    }
+
+    public void SetTriangleMaterial(int id, int materialId)
+    {
+        materials[id] = meshMaterials[materialId];
+        GetComponent<MeshRenderer>().materials = materials;
     }
 
     private void GenerateVertices()
@@ -74,8 +80,6 @@ public class PaintingCanvas : MonoBehaviour
     {
         Mesh mesh = GetComponent<MeshFilter>().mesh;
 
-        mesh.Clear();
-
         for (int i = 0; i < vertices.Count; i++)
         {
             float z = 0;
@@ -87,7 +91,7 @@ public class PaintingCanvas : MonoBehaviour
         mesh.uv = meshUVs.ToArray();
 
         mesh.subMeshCount = triangles.Count;
-        Material[] materials = new Material[triangles.Count];
+        materials = new Material[triangles.Count];
         for (int i = 0; i < triangles.Count; i++)
         {
             meshTriangles.Add(new int[3]);
@@ -100,5 +104,10 @@ public class PaintingCanvas : MonoBehaviour
         GetComponent<MeshRenderer>().materials = materials;
 
         mesh.RecalculateNormals();
+
+        if (GetComponent<MeshCollider>() == null)
+        {
+            gameObject.AddComponent<MeshCollider>();
+        }
     }
 }

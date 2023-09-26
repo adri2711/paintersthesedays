@@ -65,6 +65,8 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     private float _jumpT = 0;
     private float _jumpCoyoteT = 0;
 
+    public PaintingCanvas currentActiveCanvas { get; private set; }
+
     private void Awake()
     {
         _playerControllerInput = GetComponent<PlayerControllerInput>();
@@ -100,16 +102,41 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
             _jumpCoyoteT = MathF.Max(_jumpCoyoteT - Time.deltaTime, 0f);
         }
     }
+    public void EnableCanvasMode(PaintingCanvas canvas)
+    {
+        if (canvas == null) return;
+        canPlaceCanvas = false;
+        canMove = false;
+        canMoveCamera = false;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        currentActiveCanvas = canvas;
+    }
+    public void DisableCanvasMode()
+    {
+        canPlaceCanvas = true;
+        canMove = true;
+        canMoveCamera = true;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        currentActiveCanvas = null;
+    }
     private void HandleCanvasPlacement()
     {
         var placeCanvasLatch = LatchObservables.Latch(this.UpdateAsObservable(), _playerControllerInput.PlaceCanvas, false);
 
         _playerControllerInput.PlaceCanvas
             .Zip(placeCanvasLatch, (m, j) => new Unit())
-            .Where(xdd => canPlaceCanvas)
             .Subscribe(i =>
             {
-                _placedCanvas.OnNext(Unit.Default);
+                if (canPlaceCanvas)
+                {
+                    _placedCanvas.OnNext(Unit.Default);
+                }
+                else
+                {
+                    DisableCanvasMode();
+                }
             }).AddTo(this);
     }
     private void HandleMovement()
@@ -131,73 +158,66 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
             .Where(moveInputData => _jumpPressed || moveInputData.Move != Vector2.zero || _characterController.isGrounded == false)
             .Subscribe(i =>
             {
-                if (canMove)
+                //// Vertical Movement ////
+                bool wasGrounded = _characterController.isGrounded;
+                float verticalVelocity = 0f;
+
+                // jump while grounded
+                if (canMove && _jumpPressed && _jumpT == 0 && _jumpCoyoteT > 0)
                 {
-                    //// Vertical Movement ////
-                    bool wasGrounded = _characterController.isGrounded;
-                    float verticalVelocity = 0f;
-
-                    // jump while grounded
-                    if (_jumpPressed && _jumpT == 0 && _jumpCoyoteT > 0)
-                    {
-                        verticalVelocity = jumpForceMagnitude;
-                        _jumped.OnNext(Unit.Default);
-                        _jumpPressed = false;
-                        _jumpT = jumpCooldown;
-                        _jumpsRemaining--;
-                    }
-                    //mid-air jump following jump
-                    else if (i.Jump && _jumpT == 0 && _jumpsRemaining > 0 && _jumpsRemaining < jumps)
-                    {
-                        verticalVelocity = jumpForceMagnitude * 1.5f;
-                        _jumped.OnNext(Unit.Default);
-                        _jumpT = jumpCooldown;
-                        _jumpsRemaining--;
-                    }
-                    //jump mid-air without having jumped previously
-                    else if (i.Jump && _jumpT == 0 && _jumpsRemaining == jumps && jumps > 1)
-                    {
-                        verticalVelocity = jumpForceMagnitude * 1.5f;
-                        _jumped.OnNext(Unit.Default);
-                        _jumpT = jumpCooldown;
-                        _jumpsRemaining -= 2;
-                    }
-                    // mid-air
-                    else if (!wasGrounded)
-                    {
-                        verticalVelocity = _characterController.velocity.y + gravity * Time.deltaTime * 3.0f;
-                    }
-                    // grounded
-                    else
-                    {
-                        verticalVelocity = -Mathf.Abs(stickToGroundForceMagnitude);
-                    }
-
-                    //// Horizontal Movement ////
-                    var currentSpeed = _playerControllerInput.Run.Value ? runSpeed : walkSpeed;
-                    var horizontalVelocity = i.Move * currentSpeed; //Calculate velocity (direction * speed).
-
-                    // Apply
-                    var characterVelocity = transform.TransformVector(new Vector3(
-                        horizontalVelocity.x,
-                        verticalVelocity,
-                        horizontalVelocity.y));
-                    var motion = characterVelocity * Time.deltaTime;
-                    _characterController.Move(motion);
-
-                    //land
-                    if (!wasGrounded && _characterController.isGrounded)
-                    {
-                        // The character was airborne at the beginning, but grounded at the end of this frame.
-                        _jumpsRemaining = jumps;
-                    }
-
-                    HandleCharacterOutputSignals(wasGrounded, _characterController.isGrounded);
+                    verticalVelocity = jumpForceMagnitude;
+                    _jumped.OnNext(Unit.Default);
+                    _jumpPressed = false;
+                    _jumpT = jumpCooldown;
+                    _jumpsRemaining--;
                 }
+                //mid-air jump following jump
+                else if (i.Jump && _jumpT == 0 && _jumpsRemaining > 0 && _jumpsRemaining < jumps)
+                {
+                    verticalVelocity = jumpForceMagnitude * 1.5f;
+                    _jumped.OnNext(Unit.Default);
+                    _jumpT = jumpCooldown;
+                    _jumpsRemaining--;
+                }
+                //jump mid-air without having jumped previously
+                else if (i.Jump && _jumpT == 0 && _jumpsRemaining == jumps && jumps > 1)
+                {
+                    verticalVelocity = jumpForceMagnitude * 1.5f;
+                    _jumped.OnNext(Unit.Default);
+                    _jumpT = jumpCooldown;
+                    _jumpsRemaining -= 2;
+                }
+                // mid-air
+                else if (!wasGrounded)
+                {
+                    verticalVelocity = _characterController.velocity.y + gravity * Time.deltaTime * 3.0f;
+                }
+                // grounded
                 else
                 {
-
+                    verticalVelocity = -Mathf.Abs(stickToGroundForceMagnitude);
                 }
+
+                //// Horizontal Movement ////
+                var currentSpeed = _playerControllerInput.Run.Value ? runSpeed : walkSpeed;
+                var horizontalVelocity = i.Move * currentSpeed; //Calculate velocity (direction * speed).
+
+                // Apply
+                var characterVelocity = transform.TransformVector(new Vector3(
+                    horizontalVelocity.x,
+                    verticalVelocity,
+                    horizontalVelocity.y));
+                var motion = characterVelocity * Time.deltaTime;
+                _characterController.Move(motion);
+
+                //land
+                if (!wasGrounded && _characterController.isGrounded)
+                {
+                    // The character was airborne at the beginning, but grounded at the end of this frame.
+                    _jumpsRemaining = jumps;
+                }
+
+                HandleCharacterOutputSignals(wasGrounded, _characterController.isGrounded);
 
             }).AddTo(this);
     }
@@ -246,14 +266,14 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
             }
             else
             {
-                var horizontalLook = inputLook.x * Vector3.up * Time.deltaTime * cameraSpeed;
-                var newQX = transform.localRotation * Quaternion.Euler(horizontalLook);
-                transform.localRotation = RotationTools.ClampRotationAroundYAxis(newQX, -45f, 45f);
+                //var horizontalLook = inputLook.x * Vector3.up * Time.deltaTime * cameraSpeed;
+                //var newQX = transform.localRotation * Quaternion.Euler(horizontalLook);
+                //transform.localRotation = RotationTools.ClampRotationAroundYAxis(newQX, -45f, 45f);
             
-                var verticalLook = inputLook.y * Vector3.left * Time.deltaTime * cameraSpeed;
-                var newQ = _camera.transform.localRotation * Quaternion.Euler(verticalLook);
+                //var verticalLook = inputLook.y * Vector3.left * Time.deltaTime * cameraSpeed;
+                //var newQ = _camera.transform.localRotation * Quaternion.Euler(verticalLook);
 
-                _camera.transform.localRotation = RotationTools.ClampRotationAroundXAxis(newQ, -45f, 45f);
+                //_camera.transform.localRotation = RotationTools.ClampRotationAroundXAxis(newQ, -45f, 45f);
             }
         }).AddTo(this);
     }
