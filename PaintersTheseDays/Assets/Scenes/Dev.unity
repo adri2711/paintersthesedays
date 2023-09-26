@@ -394,6 +394,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvasPlacementDistance: 4
+  canvasEditingDistance: 7
 --- !u!114 &330585552
 MonoBehaviour:
   m_ObjectHideFlags: 0

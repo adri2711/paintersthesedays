@@ -11,6 +11,7 @@ public class CanvasPlacer : MonoBehaviour
     private GameObject _paintingCanvasPrefab;
 
     [SerializeField] float canvasPlacementDistance = 3f;
+    [SerializeField] float canvasEditingDistance = 5f;
 
     private void Awake()
     {
@@ -18,6 +19,7 @@ public class CanvasPlacer : MonoBehaviour
         _characterSignals = _characterSignalsInterfaceTarget.GetComponent<ICharacterSignals>();
         _paintingCanvasPrefab = Resources.Load("Prefab/PaintingCanvas") as GameObject;
     }
+
     private void Start()
     {
         _characterSignals.PlacedCanvas.Subscribe(w =>
@@ -25,15 +27,18 @@ public class CanvasPlacer : MonoBehaviour
             Place();
         }).AddTo(this);
     }
+
     private void Place()
     {
+        if (CheckIfClickingCanvas()) return;
         Quaternion rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f);
         PaintingCanvas paintingCanvasObject = Instantiate(_paintingCanvasPrefab, transform.position, rotation).GetComponent<PaintingCanvas>();
 
-        RaycastHit hit;
-        Vector3 raycastPos;
         float thickness = .5f;
         Vector3 canvasHalfExtents = new Vector3(paintingCanvasObject.width / 2f, paintingCanvasObject.width * paintingCanvasObject.resolution / 2f, thickness / 2f);
+
+        Vector3 raycastPos;
+        RaycastHit hit;
 
         if (Physics.BoxCast(transform.position, canvasHalfExtents, transform.forward, out hit, rotation, canvasPlacementDistance))
         {
@@ -50,5 +55,20 @@ public class CanvasPlacer : MonoBehaviour
         }
 
         _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>().EnableCanvasMode(paintingCanvasObject);
+    }
+
+    private bool CheckIfClickingCanvas()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.forward, out hit, canvasEditingDistance))
+        {
+            PaintingCanvas colliderCanvas = hit.collider.GetComponent<PaintingCanvas>();
+            if (colliderCanvas != null)
+            {
+                _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>().EnableCanvasMode(colliderCanvas);
+                return true;
+            }
+        }
+        return false;
     }
 }
