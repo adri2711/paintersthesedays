@@ -16,8 +16,8 @@ public class PaintingCanvas : MonoBehaviour
 
     public float width = 2f;
     public float resolution = 1.61f;
+    public int subdivisions = 11;
     Vector2 size;
-    int subdivisions = 11;
     float vertexVariation = 0.75f;
     private void Start()
     {

@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using UnityEngine;
 
-public class PaintingTest : MonoBehaviour
+public class PaintingController : MonoBehaviour
 {
     private GameObject _characterSignalsInterfaceTarget;
-    private ICharacterSignals _characterSignals;
     private Camera _camera;
 
     public int iterations = 3;
@@ -15,7 +14,6 @@ public class PaintingTest : MonoBehaviour
     void Start()
     {
         _characterSignalsInterfaceTarget = transform.parent.parent.gameObject;
-        _characterSignals = _characterSignalsInterfaceTarget.GetComponent<ICharacterSignals>();
         _camera = GetComponent<Camera>();
     }
 
@@ -31,7 +29,6 @@ public class PaintingTest : MonoBehaviour
                 for (int i = 0; i < iterations; i++)
                 {
                     int points = (int)((iterations - 1) * Mathf.Pow(2, i + 1));
-                    
                     for (int j = 0; j < points; j++)
                     {
                         float angle = j * 360f / points;
@@ -66,7 +63,6 @@ public class PaintingTest : MonoBehaviour
         }
 
         Mesh mesh = meshCollider.sharedMesh;
-        Vector3[] vertices = mesh.vertices;
         int[] triangles = mesh.triangles;
         return hit.triangleIndex;
     }
