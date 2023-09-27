@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class PaintingCanvas : MonoBehaviour
 {
+    MeshFilter meshFilter;
+    MeshRenderer meshRenderer;
+
     DelaunayTriangulation triangulation = new DelaunayTriangulation();
     List<Vertex> vertices = new List<Vertex>();
     List<Vector3> meshVertices = new List<Vector3>();
@@ -21,8 +24,8 @@ public class PaintingCanvas : MonoBehaviour
     float vertexVariation = 0.75f;
     private void Start()
     {
-        gameObject.AddComponent<MeshFilter>();
-        gameObject.AddComponent<MeshRenderer>();
+        meshFilter = gameObject.AddComponent<MeshFilter>();
+        meshRenderer = gameObject.AddComponent<MeshRenderer>();
         meshMaterials = Resources.LoadAll<Material>("Materials/Paint");
         GenerateVertices();
         GenerateTriangles();
@@ -40,10 +43,19 @@ public class PaintingCanvas : MonoBehaviour
         }
     }
 
-    public void SetTriangleMaterial(int id, int materialId)
+    public void SetMaterialToTriangles(int[] id, Material material)
     {
-        materials[id] = meshMaterials[materialId];
-        GetComponent<MeshRenderer>().materials = materials;
+        foreach (int i in id)
+        {
+            materials[i] = material;
+        }
+        meshRenderer.materials = materials;
+    }
+
+    public void SetTriangleMaterial(int id, Material material)
+    {
+        materials[id] = material;
+        meshRenderer.materials = materials;
     }
 
     private void GenerateVertices()
@@ -78,7 +90,7 @@ public class PaintingCanvas : MonoBehaviour
 
     private void GenerateMesh()
     {
-        Mesh mesh = GetComponent<MeshFilter>().mesh;
+        Mesh mesh = meshFilter.mesh;
 
         for (int i = 0; i < vertices.Count; i++)
         {
@@ -99,9 +111,9 @@ public class PaintingCanvas : MonoBehaviour
             meshTriangles[i][1] = (triangles[i].b.id);
             meshTriangles[i][2] = (triangles[i].c.id);
             mesh.SetTriangles(meshTriangles[i], i);
-            materials[i] = meshMaterials[Random.Range(1, meshMaterials.Length)];
+            materials[i] = Paint.GenerateCanvasColor().GetMaterial();
         }
-        GetComponent<MeshRenderer>().materials = materials;
+        meshRenderer.materials = materials;
 
         mesh.RecalculateNormals();
 

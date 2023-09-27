@@ -5,7 +5,12 @@ using UnityEngine;
 
 public class PaintingController : MonoBehaviour
 {
+    public static Shader defaultShader;
+    List<Paint> _paints = new List<Paint>();
+    Paint _currentPaint;
+
     private GameObject _characterSignalsInterfaceTarget;
+    private FirstPersonController _firstPersonController;
     private Camera _camera;
 
     public int iterations = 3;
@@ -13,13 +18,17 @@ public class PaintingController : MonoBehaviour
 
     void Start()
     {
+        defaultShader = Resources.Load<Shader>("Shaders/DefaultShader");
         _characterSignalsInterfaceTarget = transform.parent.parent.gameObject;
+        _firstPersonController = _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>();
         _camera = GetComponent<Camera>();
+
+        _currentPaint = Paint.CombinePaint(new Paint(Color.cyan), new Paint(Color.magenta));
     }
 
     void Update()
     {
-        if (_characterSignalsInterfaceTarget.GetComponent<FirstPersonController>().currentActiveCanvas != null)
+        if (_firstPersonController.currentActiveCanvas != null)
         {
             if (Input.GetMouseButton(0))
             {
@@ -41,7 +50,7 @@ public class PaintingController : MonoBehaviour
                 {
                     if (t >= 0)
                     {
-                        _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>().currentActiveCanvas.SetTriangleMaterial(t, 0);
+                        _firstPersonController.currentActiveCanvas.SetTriangleMaterial(t, _currentPaint.GetMaterial());
                     }
                 }
             }
