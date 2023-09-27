@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -54,6 +55,10 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     [SerializeField] private float cameraSpeed = 5f;
     [Range(-90, 0)][SerializeField] private float minViewAngle = -60f;
     [Range(0, 90)][SerializeField] private float maxViewAngle = 60f;
+
+    [Header("Painting Properties")]
+    [SerializeField] private float adjustToCanvasDuration = 0.5f;
+    [SerializeField] private float distanceFromCanvas = 1.5f;
     #endregion
 
     public bool canMove = true;
@@ -102,6 +107,37 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
             _jumpCoyoteT = MathF.Max(_jumpCoyoteT - Time.deltaTime, 0f);
         }
     }
+    public void AdjustCameraToCanvas()
+    {
+        if (currentActiveCanvas == null) return;
+        Vector3 b = currentActiveCanvas.transform.forward * -1;
+        Vector3 pos = currentActiveCanvas.transform.position + b * distanceFromCanvas;
+        StartCoroutine(MoveToPosition(pos, adjustToCanvasDuration));
+    }
+
+    private IEnumerator MoveToPosition(Vector3 pos, float t)
+    {
+        Vector3 dist = pos - transform.position;
+        float speed = dist.magnitude / t;
+
+        Vector3 startRotation = new Vector3(_camera.transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, 0f);
+        Vector3 canvasRotation = currentActiveCanvas.transform.rotation.eulerAngles;
+
+        for (float f = 0f; f <= t; f += Time.deltaTime)
+        {
+            Vector3 movement = dist.normalized * speed * Time.deltaTime;
+            _characterController.Move(new Vector3(movement.x, 0f, movement.z));
+
+            float smoothCurve = Mathf.SmoothStep(0f, 1f, f / t);
+            float xRotation = Mathf.LerpAngle(startRotation.x, canvasRotation.x, smoothCurve);
+            float yRotation = Mathf.LerpAngle(startRotation.y, canvasRotation.y, smoothCurve);
+            transform.localRotation = Quaternion.Euler(new Vector3(0f, yRotation, 0f));
+            _camera.transform.localRotation = Quaternion.Euler(new Vector3(xRotation, 0f, 0f));
+
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
     public void EnableCanvasMode(PaintingCanvas canvas)
     {
         if (canvas == null) return;
@@ -111,6 +147,7 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
         currentActiveCanvas = canvas;
+        AdjustCameraToCanvas();
     }
     public void DisableCanvasMode()
     {

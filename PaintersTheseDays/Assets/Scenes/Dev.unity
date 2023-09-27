@@ -394,7 +394,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvasPlacementDistance: 4
-  canvasEditingDistance: 7
+  canvasEditingDistance: 8
 --- !u!114 &330585552
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1297,6 +1297,8 @@ MonoBehaviour:
   cameraSpeed: 6
   minViewAngle: -85
   maxViewAngle: 85
+  adjustToCanvasDuration: 0.4
+  distanceFromCanvas: 3
   canMove: 1
   canMoveCamera: 1
   canPlaceCanvas: 1
