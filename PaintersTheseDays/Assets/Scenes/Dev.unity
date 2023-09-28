@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18206343, g: 0.22775762, b: 0.30739456, a: 1}
+  m_IndirectSpecularColor: {r: 0.1820637, g: 0.22775799, b: 0.3073953, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -394,7 +394,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvasPlacementDistance: 4
-  canvasEditingDistance: 7
+  canvasEditingDistance: 8
 --- !u!114 &330585552
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -971,7 +971,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 757053992}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.338, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1545,6 +1545,8 @@ MonoBehaviour:
   cameraSpeed: 6
   minViewAngle: -85
   maxViewAngle: 85
+  adjustToCanvasDuration: 0.4
+  distanceFromCanvas: 3
   canMove: 1
   canMoveCamera: 1
   canPlaceCanvas: 1
