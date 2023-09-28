@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Mime;
-using Canvas;
+using NoMonoBehaviourClasses;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -12,6 +12,8 @@ namespace Managers
     public class DialogueManager : MonoBehaviour
     {
         private static DialogueManager _instance;
+
+        private const string DIALOGUE_JSON_FILE = "/Dialogues.json";
 
         [SerializeField] private UnityEngine.Canvas _canvas;
         
@@ -38,6 +40,7 @@ namespace Managers
         
         public static DialogueManager Instance => _instance;
 
+        public static string DIALOGUE_JSON_FILE1 => DIALOGUE_JSON_FILE;
 
         void Start()
         {
@@ -67,7 +70,7 @@ namespace Managers
             
             _sentences.Clear();
 
-            foreach (string sentence in dialogue.sentences)
+            foreach (string sentence in dialogue.dialogueSentences[0].sentences)
             {
                 _sentences.Enqueue(sentence);
             }
@@ -117,6 +120,11 @@ namespace Managers
 
             _currentSentenceFinished = true;
             _finish = false;
+        }
+
+        public string GetDialogueJSONPath() 
+        {
+            return DIALOGUE_JSON_FILE;
         }
     }
 }

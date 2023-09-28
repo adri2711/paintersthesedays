@@ -1,0 +1,49 @@
+{
+	"dialogues":
+	[
+		{
+			"speecherName": "Òscar García Pañella, PhD.",
+			"dialogueSentences":
+			[
+				{
+					"chosenOptionsSequenceNeeded" : "2",
+					"sentences":
+					[
+						"IA class",
+						"Dies from cringe",
+						"Your eyes are better",
+						"Dies from cringe again",
+						"Chamfer"	
+					]
+				},
+				{
+					"chosenOptionsSequenceNeeded" : "1",
+					"sentences":
+					[
+						"Fuck it"
+					]
+				}				
+			],
+			"dialogueOptions":
+			[
+				{
+					"optionsNumber": "1",
+					"options":
+					[
+						"Yeah",
+						"No",
+						"Fuck Yeah"
+					]
+				},
+				{
+					"optionsNumber": "2",					
+					"options":
+					[
+						"Òscar García Pañella, PhD."
+					]
+				}
+			],
+			"chosenOptions": ""			
+		}
+	]
+}
