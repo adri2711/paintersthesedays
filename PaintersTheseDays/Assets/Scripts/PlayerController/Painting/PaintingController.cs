@@ -83,16 +83,10 @@ public class PaintingController : MonoBehaviour
     private int SelectTriangle(Vector3 originPos)
     {
         RaycastHit hit;
-        if (!Physics.Raycast(_camera.ScreenPointToRay(originPos), out hit))
-        {
-            return -1;
-        }
+        if (!Physics.Raycast(_camera.ScreenPointToRay(originPos), out hit)) return -1;
 
         MeshCollider meshCollider = hit.collider as MeshCollider;
-        if (meshCollider == null || meshCollider.sharedMesh == null)
-        {
-            return -1;
-        }
+        if (meshCollider == null || meshCollider.sharedMesh == null) return -1;
 
         Mesh mesh = meshCollider.sharedMesh;
         int[] triangles = mesh.triangles;

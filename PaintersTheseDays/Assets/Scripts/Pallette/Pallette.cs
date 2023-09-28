@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pallette : MonoBehaviour
+public class Pallette
 {
     List<Paint> paints = new List<Paint>();
     int selectedPaint;
