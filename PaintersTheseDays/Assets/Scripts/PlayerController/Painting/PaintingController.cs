@@ -23,7 +23,7 @@ public class PaintingController : MonoBehaviour
 
         brushes.Add(new Brush(Color.cyan, 3, 4f));
         brushes.Add(new Brush(Color.yellow, 5, 4f));
-        brushes.Add(new Brush(Color.magenta, 3, 2f));
+        brushes.Add(new Brush(Paint.CombineColors(Color.red, Color.blue, 0.7f), 3, 2f));
 
     }
 
@@ -33,11 +33,11 @@ public class PaintingController : MonoBehaviour
         {
             if (Input.GetMouseButton(0))
             {
-                Paint();
+                PaintWithBrush();
             }
             if (Input.GetMouseButton(1))
             {
-                Paint(true);
+                PaintWithBrush(true);
             }
         }
 
@@ -55,10 +55,10 @@ public class PaintingController : MonoBehaviour
         canScroll = true;
     }
 
-    private void Paint(bool rightClick = false)
+    private void PaintWithBrush(bool rightClick = false)
     {
-        int iterations = brushes[_selectedBrush].density;
-        float sizeIncrease = brushes[_selectedBrush].dispersion;
+        int iterations = rightClick ? 1 : brushes[_selectedBrush].density;
+        float sizeIncrease = rightClick ? 1f : brushes[_selectedBrush].dispersion;
         HashSet<int> brushTris = new HashSet<int>();
 
         brushTris.Add(SelectTriangle(Input.mousePosition));

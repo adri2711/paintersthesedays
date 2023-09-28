@@ -17,15 +17,13 @@ public class Paint
         c = Color.HSVToRGB(h, s, v);
         return new Paint(c);
     }
-    public static Paint CombinePaint(Paint p1, Paint p2)
+    public static Paint CombinePaint(Paint p1, Paint p2, float w1 = .5f)
     {
-        return new Paint(CombineColors(p1.GetColor(), p2.GetColor()));
+        return new Paint(CombineColors(p1.color, p2.color, w1));
     }
-    private static Color CombineColors(Color c1, Color c2)
+    public static Color CombineColors(Color c1, Color c2, float w1 = .5f)
     {
-        Color newColor;
-        newColor = new Color((c1.r + c2.r) / 2f, (c1.g + c2.g) / 2f, (c1.b + c2.b) / 2f, (c1.a + c2.a) / 2f);
-        return newColor;
+        return c1 * w1 + c2 * (1f - w1);
     }
     public Paint(Color color)
     {
