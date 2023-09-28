@@ -21,7 +21,7 @@ public class PaintingCanvas : MonoBehaviour
     public float resolution = 1.61f;
     public int subdivisions = 11;
     Vector2 size;
-    float vertexVariation = 0.75f;
+    public float vertexVariation = 0.75f;
     private void Start()
     {
         meshFilter = gameObject.AddComponent<MeshFilter>();

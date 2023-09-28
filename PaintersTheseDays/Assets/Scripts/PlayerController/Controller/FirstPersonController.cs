@@ -120,8 +120,11 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         Vector3 dist = pos - transform.position;
         float speed = dist.magnitude / t;
 
+        float d = (currentActiveCanvas.transform.position + new Vector3(0f, currentActiveCanvas.width * currentActiveCanvas.resolution * 0.5f, 0f) - _camera.transform.position).magnitude;
+        float h = currentActiveCanvas.transform.position.y + currentActiveCanvas.width * currentActiveCanvas.resolution * 0.5f - _camera.transform.position.y;
+        float vAngle = Mathf.Rad2Deg * Mathf.Asin(h / d) * 0.5f;
         Vector3 startRotation = new Vector3(_camera.transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, 0f);
-        Vector3 canvasRotation = currentActiveCanvas.transform.rotation.eulerAngles;
+        Vector3 canvasRotation = currentActiveCanvas.transform.rotation.eulerAngles + new Vector3(-vAngle, 0f, 0f);
 
         for (float f = 0f; f <= t; f += Time.deltaTime)
         {
@@ -166,7 +169,7 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
             .Zip(placeCanvasLatch, (m, j) => new Unit())
             .Subscribe(i =>
             {
-                if (canPlaceCanvas)
+                if (_characterController.isGrounded && canPlaceCanvas)
                 {
                     _placedCanvas.OnNext(Unit.Default);
                 }
@@ -235,20 +238,21 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
                     verticalVelocity = -Mathf.Abs(stickToGroundForceMagnitude);
                 }
 
+                Vector2 horizontalVelocity = new Vector2();
                 if (canMove)
                 {
                     //// Horizontal Movement ////
                     var currentSpeed = _playerControllerInput.Run.Value ? runSpeed : walkSpeed;
-                    var horizontalVelocity = i.Move * currentSpeed; //Calculate velocity (direction * speed).
-
-                    // Apply
-                    var characterVelocity = transform.TransformVector(new Vector3(
-                        horizontalVelocity.x,
-                        verticalVelocity,
-                        horizontalVelocity.y));
-                    var motion = characterVelocity * Time.deltaTime;
-                    _characterController.Move(motion);
+                    horizontalVelocity = i.Move * currentSpeed; //Calculate velocity (direction * speed).
                 }
+
+                // Apply
+                var characterVelocity = transform.TransformVector(new Vector3(
+                    horizontalVelocity.x,
+                    verticalVelocity,
+                    horizontalVelocity.y));
+                var motion = characterVelocity * Time.deltaTime;
+                _characterController.Move(motion);
 
                 //land
                 if (!wasGrounded && _characterController.isGrounded)
