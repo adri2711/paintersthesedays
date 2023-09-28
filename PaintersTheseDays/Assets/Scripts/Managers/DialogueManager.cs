@@ -1,11 +1,13 @@
 using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net.Mime;
 using NoMonoBehaviourClasses;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
+using Directory = System.IO.Directory;
+using File = System.IO.File;
+using Input = UnityEngine.Input;
 
 namespace Managers
 {
@@ -13,17 +15,30 @@ namespace Managers
     {
         private static DialogueManager _instance;
 
-        private const string DIALOGUE_JSON_FILE = "/Dialogues.json";
+        private const string DIALOGUE_JSON_FILE = "/Dialogues/";
 
         [SerializeField] private UnityEngine.Canvas _canvas;
+        
+        [SerializeField] private TextMeshProUGUI[] _dialogueOptions;
         
         [SerializeField] private TextMeshProUGUI _nameText;
         [SerializeField] private TextMeshProUGUI _dialogueText;
         
         private Queue<string> _sentences;
+        
+        private DialogueOption[] _options;
+
+        private Dialogue _dialogue;
+
+        private DialogueContent _dialogueContent;
+
+        private string _speakerName;
+
+        private int _optionSelected;
 
         private bool _currentSentenceFinished = true;
-        private bool _finish;
+        private bool _finishSentence;
+        private bool _choosingOption;
 
         private void Awake()
         {
@@ -36,11 +51,26 @@ namespace Managers
                 Destroy(gameObject);   
             }
             DontDestroyOnLoad(gameObject);
+
+            string directoryPath = Application.streamingAssetsPath + "/Dialogues/";
+
+            if (!Directory.Exists(directoryPath))
+            {
+                return;
+            }
+            
+            string[] files = Directory.GetFiles(directoryPath);
+
+            foreach (string file in files)
+            {
+                if (Path.GetExtension(file) == ".json")
+                {
+                    File.Copy(directoryPath +"Backups/Backup " + Path.GetFileName(file), file, true);
+                }
+            }
         }
         
         public static DialogueManager Instance => _instance;
-
-        public static string DIALOGUE_JSON_FILE1 => DIALOGUE_JSON_FILE;
 
         void Start()
         {
@@ -49,51 +79,169 @@ namespace Managers
 
         private void Update()
         {
-            if (_canvas.gameObject.activeSelf)
+            if (!_canvas.gameObject.activeSelf)
             {
+                return;
+            }
+            if (_choosingOption)
+            {
+                if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+                {
+                    _optionSelected++;
+                    if (_optionSelected == _options.Length)
+                    {
+                        _optionSelected = 0;
+                    }
+                }
+                else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+                {
+                    _optionSelected--;
+                    if (_optionSelected == -1)
+                    {
+                        _optionSelected = _options.Length - 1;
+                    }
+                }
+
                 if (Input.GetKeyDown(KeyCode.Q))
                 {
-                    if (_currentSentenceFinished)
-                    {
-                        DisplayNextSentence();
-                        return;
-                    }
+                    _dialogue.chosenOptions += _options[_optionSelected].optionNumber;
+                    _choosingOption = false;
 
-                    _finish = true;
+                    foreach (TextMeshProUGUI text in _dialogueOptions)
+                    {
+                        text.gameObject.SetActive(false);
+                    }
+                    
+                    foreach (DialoguePosOption posOption in _dialogueContent.sentencesPosOptions)
+                    {
+                        if (_dialogue.chosenOptions[^1].ToString() == posOption.selectedOptionNumber)
+                        {
+                            foreach (string sentence in posOption.sentences)
+                            {
+                                _sentences.Enqueue(sentence);
+                            }
+                            break;
+                        }
+                    }
+                    
+                    DisplayNextSentence(true);
                 }
+            }
+            else if (Input.GetKeyDown(KeyCode.Q))
+            {
+                if (_currentSentenceFinished)
+                {
+                    DisplayNextSentence(false);
+                    return;
+                }
+
+                _finishSentence = true;
             }
         }
 
-        public void StartDialogue(Dialogue dialogue)
+        public void StartDialogue(Dialogue dialogue, string speakerName)
         {
-            _nameText.text = dialogue.speecherName;
+            _dialogue = dialogue;
+
+            _speakerName = speakerName;
+            
+            _nameText.text = _speakerName;
+
+            foreach (DialogueContent content in _dialogue.dialogueContent)
+            {
+                if (_dialogue.chosenOptions == content.chosenOptionsSequenceNeeded)
+                {
+                    _dialogueContent = content;
+                    break;
+                }
+                return;
+            }
             
             _sentences.Clear();
+            _options = new DialogueOption[_dialogueContent.dialogueOptions.Length];
 
-            foreach (string sentence in dialogue.dialogueSentences[0].sentences)
+            foreach (string sentence in _dialogueContent.sentences)
             {
                 _sentences.Enqueue(sentence);
             }
 
-            DisplayNextSentence();
+            for (int i = 0; i < _dialogueContent.dialogueOptions.Length; i++)
+            {
+                _options[i] = _dialogueContent.dialogueOptions[i];
+            }
+
+            DisplayNextSentence(false);
         }
 
-        public void DisplayNextSentence()
+        private void DisplayNextSentence(bool posOptions)
         {
-            if (_sentences.Count == 0)
+            if (_sentences.Count == 0 && !posOptions)
             {
+                if (_options.Length != 0)
+                {
+                    DisplayOptions();
+                    return;
+                }
                 EndDialogue();
                 return;
             }
 
             string sentence = _sentences.Dequeue();
 
-            StartCoroutine(TypeSentence(sentence, 0.03f));
+            if (posOptions)
+            {
+                StartCoroutine(TypeSentence(sentence, 0.03f, false));
+            }
+            
+            
+            if (_sentences.Count == 0)
+            {
+                StartCoroutine(TypeSentence(sentence, 0.03f, true));    
+            }
+            else
+            {
+                StartCoroutine(TypeSentence(sentence, 0.03f, false));
+            }
+        }
+
+        private void DisplayOptions()
+        {
+            _choosingOption = true;
+            
+            for (int i = 0; i < _options.Length; i++)
+            {
+                _dialogueOptions[i].text = _options[i].option;
+                _dialogueOptions[i].gameObject.SetActive(true);           
+            }
+
+            _optionSelected = 0;
         }
 
         public void EndDialogue()
         {
             _canvas.gameObject.SetActive(false);
+            for (int i = 0; i < _options.Length; i++)
+            {
+                _dialogueOptions[i].gameObject.SetActive(false);           
+            }
+            
+            SaveDialogueToJSON();
+        }
+
+        private void SaveDialogueToJSON(bool async = false)
+        {
+
+            string json = JsonUtility.ToJson(_dialogue);
+            string path = Application.streamingAssetsPath + DIALOGUE_JSON_FILE + _speakerName + ".json";
+
+            if (async)
+            {
+                File.WriteAllTextAsync(path, json);
+            }
+            else
+            {
+                File.WriteAllText(path, json);
+            }
         }
 
         public UnityEngine.Canvas GetCanvas()
@@ -101,7 +249,7 @@ namespace Managers
             return _canvas;
         }
 
-        private IEnumerator TypeSentence(String sentence, float delayBetweenLetters)
+        private IEnumerator TypeSentence(String sentence, float delayBetweenLetters, bool lastSentence)
         {
             _dialogueText.text = "";
 
@@ -109,7 +257,7 @@ namespace Managers
             
             foreach (char character in sentence)
             {
-                if (_finish)
+                if (_finishSentence)
                 {
                     _dialogueText.text = sentence;
                     break;
@@ -119,7 +267,12 @@ namespace Managers
             }
 
             _currentSentenceFinished = true;
-            _finish = false;
+            _finishSentence = false;
+
+            if (lastSentence)
+            {
+                DisplayOptions();
+            }
         }
 
         public string GetDialogueJSONPath() 

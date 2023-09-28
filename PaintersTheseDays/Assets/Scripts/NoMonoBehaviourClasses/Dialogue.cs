@@ -6,11 +6,7 @@ namespace NoMonoBehaviourClasses
     [System.Serializable]
     public class Dialogue
     {
-        public string speecherName;
-    
-        public DialogueSentences[] dialogueSentences;
-
-        public DialogueOptions[] dialogueOptions;
+        public DialogueContent[] dialogueContent;
 
         public string chosenOptions;
     }

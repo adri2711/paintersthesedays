@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using Managers;
 using NoMonoBehaviourClasses;
@@ -13,7 +11,7 @@ namespace Canvas
         
         [SerializeField] private Dialogue _dialogue;
 
-        [SerializeField] private string _speecherName;
+        [SerializeField] private string _speakerName;
 
         private DialogueManager _dialogueManager;
 
@@ -26,7 +24,7 @@ namespace Canvas
 
         private void LoadDialogueFromJSON() 
         {
-            string jsonPath = Application.streamingAssetsPath + _dialogueManager.GetDialogueJSONPath();
+            string jsonPath = Application.streamingAssetsPath + _dialogueManager.GetDialogueJSONPath() + _speakerName + ".json";
 
             if (!File.Exists(jsonPath))
             {
@@ -35,15 +33,7 @@ namespace Canvas
 
             string json = File.ReadAllText(jsonPath);
 
-            Dialogues dialogueJson = JsonUtility.FromJson<Dialogues>(json);
-
-            foreach (Dialogue dialogue in dialogueJson.dialogues)
-            {
-                if (dialogue.speecherName == _speecherName)
-                {
-                    _dialogue = dialogue;    
-                }
-            }
+            _dialogue = JsonUtility.FromJson<Dialogue>(json);
         }
 
         private void OnTriggerEnter(Collider collider)
@@ -55,7 +45,7 @@ namespace Canvas
             
             _dialogueManager.GetCanvas().gameObject.SetActive(true);
             
-            _dialogueManager.StartDialogue(_dialogue);
+            _dialogueManager.StartDialogue(_dialogue, _speakerName);
         }
 
         private void OnTriggerExit(Collider collider)
