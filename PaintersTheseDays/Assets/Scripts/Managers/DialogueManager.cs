@@ -83,60 +83,61 @@ namespace Managers
             {
                 return;
             }
+
             if (_choosingOption)
             {
-                if (Input.GetAxis("Mouse ScrollWheel") > 0f)
-                {
-                    _optionSelected++;
-                    if (_optionSelected == _options.Length)
-                    {
-                        _optionSelected = 0;
-                    }
-                }
-                else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
-                {
-                    _optionSelected--;
-                    if (_optionSelected == -1)
-                    {
-                        _optionSelected = _options.Length - 1;
-                    }
-                }
-
-                if (Input.GetKeyDown(KeyCode.Q))
-                {
-                    _dialogue.chosenOptions += _options[_optionSelected].optionNumber;
-                    _choosingOption = false;
-
-                    foreach (TextMeshProUGUI text in _dialogueOptions)
-                    {
-                        text.gameObject.SetActive(false);
-                    }
-                    
-                    foreach (DialoguePosOption posOption in _dialogueContent.sentencesPosOptions)
-                    {
-                        if (_dialogue.chosenOptions[^1].ToString() == posOption.selectedOptionNumber)
-                        {
-                            foreach (string sentence in posOption.sentences)
-                            {
-                                _sentences.Enqueue(sentence);
-                            }
-                            break;
-                        }
-                    }
-                    
-                    DisplayNextSentence(true);
-                }
+                ChooseAnOption();
             }
             else if (Input.GetKeyDown(KeyCode.Q))
             {
                 if (_currentSentenceFinished)
                 {
-                    DisplayNextSentence(false);
+                    DisplayNextSentence();
                     return;
                 }
 
                 _finishSentence = true;
             }
+        }
+
+        private void ChooseAnOption()
+        {
+            IterateBetweenOptions();
+
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                _dialogue.chosenOptions += _options[_optionSelected].optionNumber;
+                _choosingOption = false;
+
+                foreach (TextMeshProUGUI text in _dialogueOptions)
+                {
+                    text.gameObject.SetActive(false);
+                }
+
+                foreach (DialoguePosOption posOption in _dialogueContent.sentencesPosOptions)
+                {
+                    if (_dialogue.chosenOptions[^1].ToString() == posOption.selectedOptionNumber)
+                    {
+                        LoadSentences(posOption.sentences);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void IterateBetweenOptions()
+        {
+            if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+            {
+                _optionSelected++;
+                
+            }
+            else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+            {
+                _optionSelected--;
+            }
+
+            _optionSelected = Convert.ToInt32(Mathf.Repeat(_optionSelected, _options.Length));
         }
 
         public void StartDialogue(Dialogue dialogue, string speakerName)
@@ -147,6 +148,17 @@ namespace Managers
             
             _nameText.text = _speakerName;
 
+            LoadDialogueContent();
+
+            _sentences.Clear();
+
+            LoadSentences(_dialogueContent.sentences);
+
+            DisplayNextSentence();
+        }
+
+        private void LoadDialogueContent()
+        {
             foreach (DialogueContent content in _dialogue.dialogueContent)
             {
                 if (_dialogue.chosenOptions == content.chosenOptionsSequenceNeeded)
@@ -156,52 +168,40 @@ namespace Managers
                 }
                 return;
             }
-            
-            _sentences.Clear();
-            _options = new DialogueOption[_dialogueContent.dialogueOptions.Length];
+        }
 
-            foreach (string sentence in _dialogueContent.sentences)
+        private void LoadSentences(string[] sentences)
+        {
+            foreach (string sentence in sentences)
             {
                 _sentences.Enqueue(sentence);
             }
-
-            for (int i = 0; i < _dialogueContent.dialogueOptions.Length; i++)
-            {
-                _options[i] = _dialogueContent.dialogueOptions[i];
-            }
-
-            DisplayNextSentence(false);
         }
 
-        private void DisplayNextSentence(bool posOptions)
+        private void DisplayNextSentence()
         {
-            if (_sentences.Count == 0 && !posOptions)
+            if (_sentences.Count == 0)
             {
+                _options = new DialogueOption[_dialogueContent.dialogueOptions.Length];
+
+                for (int i = 0; i < _dialogueContent.dialogueOptions.Length; i++)
+                {
+                    _options[i] = _dialogueContent.dialogueOptions[i];
+                }
+
                 if (_options.Length != 0)
                 {
                     DisplayOptions();
                     return;
                 }
+
                 EndDialogue();
                 return;
             }
 
             string sentence = _sentences.Dequeue();
 
-            if (posOptions)
-            {
-                StartCoroutine(TypeSentence(sentence, 0.03f, false));
-            }
-            
-            
-            if (_sentences.Count == 0)
-            {
-                StartCoroutine(TypeSentence(sentence, 0.03f, true));    
-            }
-            else
-            {
-                StartCoroutine(TypeSentence(sentence, 0.03f, false));
-            }
+            StartCoroutine(TypeSentence(sentence, 0.03f));
         }
 
         private void DisplayOptions()
@@ -244,12 +244,7 @@ namespace Managers
             }
         }
 
-        public UnityEngine.Canvas GetCanvas()
-        {
-            return _canvas;
-        }
-
-        private IEnumerator TypeSentence(String sentence, float delayBetweenLetters, bool lastSentence)
+        private IEnumerator TypeSentence(String sentence, float delayBetweenLetters)
         {
             _dialogueText.text = "";
 
@@ -268,11 +263,11 @@ namespace Managers
 
             _currentSentenceFinished = true;
             _finishSentence = false;
+        }
 
-            if (lastSentence)
-            {
-                DisplayOptions();
-            }
+        public UnityEngine.Canvas GetCanvas()
+        {
+            return _canvas;
         }
 
         public string GetDialogueJSONPath() 
