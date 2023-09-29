@@ -18,47 +18,50 @@
           [
             "Ty"
           ],
-          "selectedOptionNumber": "1"
+          "selectedOptionNumber": "0"
         }, 
         {
           "sentences":
           [
             "Fuck u"
           ],
-          "selectedOptionNumber": "2"
+          "selectedOptionNumber": "1"
         },
         {
           "sentences":
           [
             "I love your soul"
           ],
-          "selectedOptionNumber": "3"
+          "selectedOptionNumber": "2"
         }
       ],
       "dialogueOptions": 
       [
         {
           "option": "Yes",
-          "optionNumber": "1"
+          "optionNumber": "0"
         },
         {
           "option": "No",
-          "optionNumber": "2"
+          "optionNumber": "1"
         },
         {
           "option": "Fuck Yeah",
-          "optionNumber": "3"
+          "optionNumber": "2"
         }
       ]
     }, 
     {
-      "chosenOptionsSequenceNeeded": "2",
-      "sentences": ["Fuck it"],
+      "chosenOptionsSequenceNeeded": "0",
+      "sentences": 
+      [
+        "Fuck it"
+      ],
       "dialogueOptions": 
       [
         {
           "option": "Òscar García Pañella, PhD.",
-          "optionNumber": "1"
+          "optionNumber": "0"
         }
       ]
     }

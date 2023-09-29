@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine;
 using Directory = System.IO.Directory;
 using File = System.IO.File;
+using Image = UnityEngine.UI.Image;
 using Input = UnityEngine.Input;
 
 namespace Managers
@@ -20,13 +21,14 @@ namespace Managers
         [SerializeField] private UnityEngine.Canvas _canvas;
         
         [SerializeField] private TextMeshProUGUI[] _dialogueOptions;
+        [SerializeField] private Image[] _arrows;
         
         [SerializeField] private TextMeshProUGUI _nameText;
         [SerializeField] private TextMeshProUGUI _dialogueText;
         
         private Queue<string> _sentences;
         
-        private DialogueOption[] _options;
+        private Queue<DialogueOption> _options;
 
         private Dialogue _dialogue;
 
@@ -39,6 +41,8 @@ namespace Managers
         private bool _currentSentenceFinished = true;
         private bool _finishSentence;
         private bool _choosingOption;
+        private bool _lastSentence;
+        
 
         private void Awake()
         {
@@ -75,6 +79,7 @@ namespace Managers
         void Start()
         {
             _sentences = new Queue<string>();
+            _options = new Queue<DialogueOption>();
         }
 
         private void Update()
@@ -106,7 +111,7 @@ namespace Managers
 
             if (Input.GetKeyDown(KeyCode.Q))
             {
-                _dialogue.chosenOptions += _options[_optionSelected].optionNumber;
+                _dialogue.chosenOptions += _optionSelected;
                 _choosingOption = false;
 
                 foreach (TextMeshProUGUI text in _dialogueOptions)
@@ -122,6 +127,19 @@ namespace Managers
                         break;
                     }
                 }
+
+                foreach (Image arrow in _arrows)
+                {
+                    arrow.gameObject.SetActive(false);
+                }
+
+                _optionSelected = 0;
+
+                _lastSentence = false;
+                
+                _options.Clear();
+                
+                DisplayNextSentence();
             }
         }
 
@@ -129,15 +147,19 @@ namespace Managers
         {
             if (Input.GetAxis("Mouse ScrollWheel") > 0f)
             {
+                _arrows[_optionSelected].gameObject.SetActive(false);
                 _optionSelected++;
                 
             }
             else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
             {
+                _arrows[_optionSelected].gameObject.SetActive(false);
                 _optionSelected--;
             }
 
-            _optionSelected = Convert.ToInt32(Mathf.Repeat(_optionSelected, _options.Length));
+            _optionSelected = Convert.ToInt32(Mathf.Repeat(_optionSelected, _options.Count));
+            
+            _arrows[_optionSelected].gameObject.SetActive(true);
         }
 
         public void StartDialogue(Dialogue dialogue, string speakerName)
@@ -166,7 +188,6 @@ namespace Managers
                     _dialogueContent = content;
                     break;
                 }
-                return;
             }
         }
 
@@ -182,45 +203,60 @@ namespace Managers
         {
             if (_sentences.Count == 0)
             {
-                _options = new DialogueOption[_dialogueContent.dialogueOptions.Length];
-
-                for (int i = 0; i < _dialogueContent.dialogueOptions.Length; i++)
-                {
-                    _options[i] = _dialogueContent.dialogueOptions[i];
-                }
-
-                if (_options.Length != 0)
-                {
-                    DisplayOptions();
-                    return;
-                }
-
                 EndDialogue();
                 return;
             }
 
             string sentence = _sentences.Dequeue();
 
+            if (_sentences.Count == 0)
+            {
+                _lastSentence = true;
+            }
+
             StartCoroutine(TypeSentence(sentence, 0.03f));
         }
 
         private void DisplayOptions()
         {
-            _choosingOption = true;
-            
-            for (int i = 0; i < _options.Length; i++)
+            LoadOptions();
+
+            if (_options.Count == 0)
             {
-                _dialogueOptions[i].text = _options[i].option;
-                _dialogueOptions[i].gameObject.SetActive(true);           
+                return;
+            }
+            
+            _choosingOption = true;
+
+            int counter = 0;
+            
+            foreach (DialogueOption option in _options)
+            {
+                _dialogueOptions[counter].text = option.option;
+                _dialogueOptions[counter].gameObject.SetActive(true);
+                counter++;
             }
 
             _optionSelected = 0;
         }
 
+        private void LoadOptions()
+        {
+            int possibleOptions = 0;
+
+            foreach (DialogueOption option in _dialogueContent.dialogueOptions)
+            {
+                if (option.optionNumber.Length == _dialogue.chosenOptions.Length + 1)
+                {
+                    _options.Enqueue(option);
+                }
+            }
+        }
+
         public void EndDialogue()
         {
             _canvas.gameObject.SetActive(false);
-            for (int i = 0; i < _options.Length; i++)
+            for (int i = 0; i < _options.Count; i++)
             {
                 _dialogueOptions[i].gameObject.SetActive(false);           
             }
@@ -263,6 +299,11 @@ namespace Managers
 
             _currentSentenceFinished = true;
             _finishSentence = false;
+
+            if (_lastSentence)
+            {
+                DisplayOptions();
+            }
         }
 
         public UnityEngine.Canvas GetCanvas()
