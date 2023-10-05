@@ -10,18 +10,25 @@ public class PalletteObject : MonoBehaviour
     private FirstPersonController _firstPersonController;
     private Camera _camera;
     private Pallette _pallette = new Pallette();
+    private MeshRenderer _model;
     private List<PaintChunk> _paintChunks = new List<PaintChunk>();
 
     void Start()
     {
-        _characterSignalsInterfaceTarget = transform.parent.gameObject;
+        _characterSignalsInterfaceTarget = transform.parent.parent.parent.gameObject;
         _characterSignals = _characterSignalsInterfaceTarget.GetComponent<ICharacterSignals>();
         _firstPersonController = _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>();
-        _camera = _characterSignalsInterfaceTarget.GetComponent<Camera>();
+        _camera = GetComponentInParent<Camera>();
+        _model = transform.Find("PaletteModel").GetComponent<MeshRenderer>();
+        _model.enabled = false;
 
         _characterSignals.PlacedCanvas.Subscribe(w =>
         {
             Activate();
+        }).AddTo(this);
+        _characterSignals.ExitedCanvas.Subscribe(w =>
+        {
+            Deactivate();
         }).AddTo(this);
     }
 
@@ -51,6 +58,17 @@ public class PalletteObject : MonoBehaviour
     {
         _pallette = new Pallette();
         _pallette.SetPaints(new Color[] { Color.cyan, Color.white, Color.magenta, Color.black });
-        //make pallette visual
+        _model.enabled = true;
+        _model.GetComponent<Animator>().Play("Show");
+    }
+    private void Deactivate()
+    {
+        StartCoroutine(DeactivateCoroutine());
+    }
+    private IEnumerator DeactivateCoroutine()
+    {
+        _model.GetComponent<Animator>().Play("Hide");
+        yield return new WaitForSeconds(1f);
+        _model.enabled = false;
     }
 }

@@ -14,7 +14,6 @@ public class PaintingCanvas : MonoBehaviour
     List<Triangle> triangles = new List<Triangle>();
     List<int[]> meshTriangles = new List<int[]>();
     List<Vector2> meshUVs = new List<Vector2>();
-    Material[] meshMaterials;
     Material[] materials;
 
     public float width = 2f;
@@ -26,7 +25,6 @@ public class PaintingCanvas : MonoBehaviour
     {
         meshFilter = gameObject.AddComponent<MeshFilter>();
         meshRenderer = gameObject.AddComponent<MeshRenderer>();
-        meshMaterials = Resources.LoadAll<Material>("Materials/Paint");
         GenerateVertices();
         GenerateTriangles();
         GenerateMesh();

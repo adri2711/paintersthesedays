@@ -30,6 +30,11 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     public IObservable<Unit> PlacedCanvas => _placedCanvas;
     private Subject<Unit> _placedCanvas;
 
+    public IObservable<Unit> ExitedCanvas => _exitedCanvas;
+    private Subject<Unit> _exitedCanvas;
+
+
+
     #endregion
 
     #region Configuration
@@ -85,6 +90,7 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         _landed = new Subject<Unit>().AddTo(this);
         _stepped = new Subject<Unit>().AddTo(this);
         _placedCanvas = new Subject<Unit>().AddTo(this);
+        _exitedCanvas = new Subject<Unit>().AddTo(this);
     }
     private void Start()
     {
@@ -175,6 +181,7 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
                 }
                 else
                 {
+                    _exitedCanvas.OnNext(Unit.Default);
                     DisableCanvasMode();
                 }
             }).AddTo(this);
