@@ -2,21 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pallette
+public class Palette
 {
-    List<Paint> paints = new List<Paint>();
-    int selectedPaint;
-    Paint mixerPaint;
+    public List<Paint> paints = new List<Paint>();
+    public Paint mixerPaint;
 
-    public void AddPaintToMix(float w)
+    public void AddPaintToMix(Paint p)
     {
         if (mixerPaint == null)
         {
-            mixerPaint = paints[selectedPaint];
+            mixerPaint = p;
         }
         else
         {
-            mixerPaint = Paint.CombinePaint(mixerPaint, paints[selectedPaint], w);
+            mixerPaint = Paint.CombinePaint(mixerPaint, p);
         }
     }
     public void ConfirmMix()
@@ -26,10 +25,6 @@ public class Pallette
     public void ClearMix()
     {
         mixerPaint = null;
-    }
-    public void SelectPaint(int id)
-    {
-        selectedPaint = id;
     }
 
     public void AddPaint(Color c)
