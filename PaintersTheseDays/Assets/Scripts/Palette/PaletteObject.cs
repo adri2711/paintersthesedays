@@ -14,6 +14,7 @@ public class PaletteObject : MonoBehaviour
     private PaintingController _paintingController;
     private Camera _camera;
     private MeshRenderer _model;
+    private BrushObject _brushObject;
     private Object _paintChunkPrefab;
     private List<Paint> _paints = new List<Paint>();
     private List<PaintChunk> _paintChunks = new List<PaintChunk>();
@@ -31,6 +32,8 @@ public class PaletteObject : MonoBehaviour
         _camera = GetComponentInParent<Camera>();
         _model = transform.Find("PaletteModel").GetComponent<MeshRenderer>();
         _model.enabled = false;
+
+        _brushObject = transform.parent.parent.GetComponentInChildren<BrushObject>();
 
         _characterSignals.PlacedCanvas.Subscribe(w =>
         {
@@ -87,6 +90,7 @@ public class PaletteObject : MonoBehaviour
         else
         {
             _paintingController.SetSelectedBrushPaint(paintChunk.paint);
+            _brushObject.SetPaint(paintChunk.paint);
         }
         StartCoroutine(ClickDelay(0.2f));
     }
@@ -124,7 +128,7 @@ public class PaletteObject : MonoBehaviour
     private void Activate()
     {
         _active = true;
-        SetPaints(new Color[] { Color.cyan, Color.yellow, Color.magenta, Color.black});
+        SetPaints(new Color[] { Color.cyan, Color.yellow, Color.magenta, Color.black, Color.white});
         _model.enabled = true;
         _model.GetComponent<Animator>().Play("Show");
         GeneratePaintChunks();
