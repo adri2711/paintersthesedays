@@ -45,6 +45,7 @@ public class BrushObject : MonoBehaviour
     {
         brushTipMaterial.EnableKeyword("_EMISSION");
         brushTipMaterial.SetColor("_EmissionColor", p.GetColor());
+        brushTipMaterial.color = p.GetColor();
     }
     public void ClearPaint()
     {
