@@ -82,7 +82,6 @@ public class PaletteObject : MonoBehaviour
                 _mixerPaintChunk.timesMixed++;
                 AddPaintToMix(paintChunk.paint, Mathf.Max(1f / _mixerPaintChunk.timesMixed, 0.15f));
                 UpdatePaintMixMaterial();
-                Debug.Log(_mixerPaintChunk.paint.GetColor().ToString());
             }
         }
         else
