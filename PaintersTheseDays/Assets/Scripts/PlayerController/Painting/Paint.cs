@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class Paint
 {
-    Material material;
-    Color color;
+    bool _primary = false;
+    Material _material;
+    Color _color;
     
     public static Paint GenerateCanvasColor()
     {
@@ -19,32 +20,37 @@ public class Paint
     }
     public static Paint CombinePaint(Paint p1, Paint p2, float w1 = .5f)
     {
-        return new Paint(CombineColors(p1.color, p2.color, w1));
+        return new Paint(CombineColors(p1._color, p2._color, w1));
     }
     public static Color CombineColors(Color c1, Color c2, float w1 = .5f)
     {
         return c1 * w1 + c2 * (1f - w1);
     }
-    public Paint(Color color)
+    public Paint(Color color, bool primary = false)
     {
-        this.color = color;
+        this._color = color;
+        this._primary = primary;
     }
     public Material GetMaterial()
     {
-        if (material == null)
+        if (_material == null)
         {
-            material = new Material(PaintingController.defaultShader);
-            material.color = color;
+            _material = new Material(PaintingController.defaultShader);
+            _material.color = _color;
         }
-        return material;
+        return _material;
     }
     public Color GetColor()
     {
-        return color;
+        return _color;
+    }
+    public bool IsPrimary()
+    {
+        return _primary;
     }
     public void SetColor(Color newColor)
     {
-        material = null;
-        color = newColor;
+        _material = null;
+        _color = newColor;
     }
 }

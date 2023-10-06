@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UniRx;
 using UniRx.Triggers;
 using Unity.VisualScripting;
@@ -16,24 +17,28 @@ public class PaletteObject : MonoBehaviour
     private MeshRenderer _model;
     private BrushObject _brushObject;
     private Object _paintChunkPrefab;
+    private Object _glassPrefab;
     private List<Paint> _paints = new List<Paint>();
     private List<PaintChunk> _paintChunks = new List<PaintChunk>();
     private PaintChunk _mixerPaintChunk;
+    private PaletteGlass _glass;
     private bool _canClick = true;
-    bool _active = false;
+    private bool _erase = false;
+    private bool _active = false;
 
     void Start()
     {
         _paintChunkPrefab = Resources.Load("Prefab/Models/PaintChunk");
+        _glassPrefab = Resources.Load("Prefab/Models/Glass");
         _characterSignalsInterfaceTarget = transform.parent.parent.parent.gameObject;
         _characterSignals = _characterSignalsInterfaceTarget.GetComponent<ICharacterSignals>();
         _firstPersonController = _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>();
         _paintingController = GetComponentInParent<PaintingController>();
         _camera = GetComponentInParent<Camera>();
+        _brushObject = transform.parent.parent.GetComponentInChildren<BrushObject>();
         _model = transform.Find("PaletteModel").GetComponent<MeshRenderer>();
         _model.enabled = false;
-
-        _brushObject = transform.parent.parent.GetComponentInChildren<BrushObject>();
+        SetPaints(new Color[] { Color.cyan, Color.yellow, Color.magenta, Color.black, Color.white }, true);
 
         _characterSignals.PlacedCanvas.Subscribe(w =>
         {
@@ -64,34 +69,54 @@ public class PaletteObject : MonoBehaviour
         RaycastHit hit;
         if (!Physics.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out hit)) return;
         PaintChunk paintChunk = hit.collider.GetComponent<PaintChunk>();
-        if (paintChunk == null) return;
-        if (right) 
+        PaletteGlass paletteGlass = hit.collider.GetComponentInParent<PaletteGlass>();
+        if (paintChunk != null)
         {
-            if (paintChunk.isMix)
+            if (right)
             {
-                ConfirmMix();
-                GeneratePaintChunks();
-            }
-            else if (_mixerPaintChunk == null)
-            {
-                Object c = Instantiate(_paintChunkPrefab, _model.transform);
-                _mixerPaintChunk = c.AddComponent<PaintChunk>();
-                _mixerPaintChunk.Setup(paintChunk.paint, true);
-                _paintChunks.Add(_mixerPaintChunk);
-                _mixerPaintChunk.timesMixed++;
+                if (paintChunk.isMix)
+                {
+                    ConfirmMix();
+                    GeneratePaintChunks();
+                }
+                else if (_mixerPaintChunk == null)
+                {
+                    Object c = Instantiate(_paintChunkPrefab, _model.transform);
+                    _mixerPaintChunk = c.AddComponent<PaintChunk>();
+                    _mixerPaintChunk.Setup(paintChunk.paint, true);
+                    _paintChunks.Add(_mixerPaintChunk);
+                    _mixerPaintChunk.timesMixed++;
+                }
+                else
+                {
+                    _mixerPaintChunk.timesMixed++;
+                    AddPaintToMix(paintChunk.paint, Mathf.Max(1f / _mixerPaintChunk.timesMixed, 0.15f));
+                    UpdatePaintMixMaterial();
+                }
             }
             else
             {
-                _mixerPaintChunk.timesMixed++;
-                AddPaintToMix(paintChunk.paint, Mathf.Max(1f / _mixerPaintChunk.timesMixed, 0.15f));
-                UpdatePaintMixMaterial();
+                if (_erase) 
+                {
+                    if (!paintChunk.paint.IsPrimary())
+                    {
+                        _erase = false;
+                        _paints.Remove(paintChunk.paint);
+                        GeneratePaintChunks();
+                    }
+                }
+                else
+                {
+                    _paintingController.SetSelectedBrushPaint(paintChunk.paint);
+                    _brushObject.SetPaint(paintChunk.paint);
+                }
             }
         }
-        else
+        else if (paletteGlass != null)
         {
-            _paintingController.SetSelectedBrushPaint(paintChunk.paint);
-            _brushObject.SetPaint(paintChunk.paint);
+            _erase = true;
         }
+        else return;
         StartCoroutine(ClickDelay(0.2f));
     }
     public void AddPaintToMix(Paint p, float w)
@@ -107,31 +132,38 @@ public class PaletteObject : MonoBehaviour
     }
     public void ConfirmMix()
     {
+        foreach (Paint paint in _paints)
+        {
+            if (paint.GetColor() == _mixerPaintChunk.paint.GetColor())
+            {
+                return;
+            }
+        }
         _paints.Add(_mixerPaintChunk.paint);
     }
     public void ClearMix()
     {
         Destroy(_mixerPaintChunk);
     }
-    public void AddPaint(Color c)
+    public void AddPaint(Color c, bool primary = false)
     {
-        _paints.Add(new Paint(c));
+        _paints.Add(new Paint(c, primary));
     }
-    public void SetPaints(Color[] colors)
+    public void SetPaints(Color[] colors, bool primary = false)
     {
         _paints = new List<Paint>();
         foreach (Color c in colors)
         {
-            _paints.Add(new Paint(c));
+            _paints.Add(new Paint(c, primary));
         }
     }
     private void Activate()
     {
         _active = true;
-        SetPaints(new Color[] { Color.cyan, Color.yellow, Color.magenta, Color.black, Color.white});
         _model.enabled = true;
+        _erase = false;
         _model.GetComponent<Animator>().Play("Show");
-        GeneratePaintChunks();
+        if (_paintChunks.Count == 0) GeneratePaintChunks();
     }
     private void Deactivate()
     {
@@ -160,6 +192,10 @@ public class PaletteObject : MonoBehaviour
         {
             Destroy(p.gameObject);
         }
+        if (_glass != null)
+        {
+            Destroy(_glass.gameObject);
+        }
         _paintChunks.Clear();
         for (int i = 0; i < _paints.Count; i++)
         {
@@ -173,5 +209,6 @@ public class PaletteObject : MonoBehaviour
             paintChunk.transform.localPosition = pos;
             _paintChunks.Add(paintChunk);
         }
+        _glass = Instantiate(_glassPrefab, _model.transform).GetComponent<PaletteGlass>();
     }
 }
