@@ -43,7 +43,12 @@ public class BrushObject : MonoBehaviour
     }
     public void SetPaint(Paint p)
     {
-        brushTipMaterial.color = p.GetColor();
+        brushTipMaterial.EnableKeyword("_EMISSION");
+        brushTipMaterial.SetColor("_EmissionColor", p.GetColor());
+    }
+    public void ClearPaint()
+    {
+        brushTipMaterial.DisableKeyword("_EMISSION");
     }
     private void Activate()
     {
