@@ -1,1 +1,70 @@
-{"dialogueContent":[{"chosenOptionsSequenceNeeded":"","sentences":["IA class","Dies from cringe","Your eyes are better","Dies from cringe again","Chamfer"],"sentencesPosOptions":[{"sentences":["Ty"],"selectedOptionNumber":"0"},{"sentences":["Fuck u"],"selectedOptionNumber":"1"},{"sentences":["I love your soul"],"selectedOptionNumber":"2"}],"dialogueOptions":[{"option":"Yes","optionNumber":"0"},{"option":"No","optionNumber":"1"},{"option":"Fuck Yeah","optionNumber":"2"}]},{"chosenOptionsSequenceNeeded":"0","sentences":["Fuck it"],"sentencesPosOptions":[],"dialogueOptions":[{"option":"Òscar García Pañella, PhD.","optionNumber":"0"}]}],"chosenOptions":"0"}
+{
+  "dialogueContent": 
+  [
+    {
+      "chosenOptionsSequenceNeeded": "",
+      "sentences": 
+        [
+          "IA class", 
+          "Dies from cringe",
+          "Your eyes are better",
+          "Dies from cringe again",
+          "Chamfer"
+        ],
+      "sentencesPosOptions": 
+      [
+        {
+          "sentences":
+          [
+            "Ty"
+          ],
+          "selectedOptionNumber": "0"
+        }, 
+        {
+          "sentences":
+          [
+            "Fuck u"
+          ],
+          "selectedOptionNumber": "1"
+        },
+        {
+          "sentences":
+          [
+            "I love your soul"
+          ],
+          "selectedOptionNumber": "2"
+        }
+      ],
+      "dialogueOptions": 
+      [
+        {
+          "option": "Yes",
+          "optionNumber": "0"
+        },
+        {
+          "option": "No",
+          "optionNumber": "1"
+        },
+        {
+          "option": "Fuck Yeah",
+          "optionNumber": "2"
+        }
+      ]
+    }, 
+    {
+      "chosenOptionsSequenceNeeded": "0",
+      "sentences": 
+      [
+        "Fuck it"
+      ],
+      "dialogueOptions": 
+      [
+        {
+          "option": "Òscar García Pañella, PhD.",
+          "optionNumber": "0"
+        }
+      ]
+    }
+  ],
+  "chosenOptions": ""
+}

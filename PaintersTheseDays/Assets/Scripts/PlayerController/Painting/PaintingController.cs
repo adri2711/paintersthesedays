@@ -10,9 +10,9 @@ public class PaintingController : MonoBehaviour
     private GameObject _characterSignalsInterfaceTarget;
     private FirstPersonController _firstPersonController;
     private Camera _camera;
-    List<Brush> brushes = new List<Brush>();
+    List<Brush> _brushes = new List<Brush>();
     int _selectedBrush = 0;
-    bool canScroll = true;
+    bool _canScroll = true;
 
     void Start()
     {
@@ -21,9 +21,9 @@ public class PaintingController : MonoBehaviour
         _firstPersonController = _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>();
         _camera = GetComponent<Camera>();
 
-        brushes.Add(new Brush(Color.cyan, 3, 4f));
-        brushes.Add(new Brush(Color.yellow, 5, 4f));
-        brushes.Add(new Brush(Paint.CombineColors(Color.red, Color.blue, 0.7f), 3, 2f));
+        _brushes.Add(new Brush(Color.cyan, 3, 4f));
+        _brushes.Add(new Brush(Color.yellow, 5, 4f));
+        _brushes.Add(new Brush(Paint.CombineColors(Color.red, Color.blue, 0.7f), 3, 2f));
 
     }
 
@@ -41,24 +41,29 @@ public class PaintingController : MonoBehaviour
             }
         }
 
-        if (canScroll && Mathf.Abs(Input.mouseScrollDelta.y) >= 1)
+        if (_canScroll && Mathf.Abs(Input.mouseScrollDelta.y) >= 1)
         {
-            _selectedBrush = (_selectedBrush + (int)Input.mouseScrollDelta.y + brushes.Count) % brushes.Count;
+            _selectedBrush = (_selectedBrush + (int)Input.mouseScrollDelta.y + _brushes.Count) % _brushes.Count;
             StartCoroutine(BrushScrollDelay(0.2f));
         }
     }
 
+    public void SetSelectedBrushPaint(Paint p)
+    {
+        _brushes[_selectedBrush].paint = p;
+    }
+
     private IEnumerator BrushScrollDelay(float t)
     {
-        canScroll = false;
+        _canScroll = false;
         yield return new WaitForSeconds(t);
-        canScroll = true;
+        _canScroll = true;
     }
 
     private void PaintWithBrush(bool rightClick = false)
     {
-        int iterations = rightClick ? 1 : brushes[_selectedBrush].density;
-        float sizeIncrease = rightClick ? 1f : brushes[_selectedBrush].dispersion;
+        int iterations = rightClick ? 1 : _brushes[_selectedBrush].density;
+        float sizeIncrease = rightClick ? 1f : _brushes[_selectedBrush].dispersion;
         HashSet<int> brushTris = new HashSet<int>();
 
         brushTris.Add(SelectTriangle(Input.mousePosition));
@@ -76,7 +81,7 @@ public class PaintingController : MonoBehaviour
         foreach (int t in brushTris)
         {
             if (t < 0) continue;
-            _firstPersonController.currentActiveCanvas.SetTriangleMaterial(t, brushes[_selectedBrush].GetMaterial());
+            _firstPersonController.currentActiveCanvas.SetTriangleMaterial(t, _brushes[_selectedBrush].GetMaterial());
         }
     }
 
@@ -86,7 +91,7 @@ public class PaintingController : MonoBehaviour
         if (!Physics.Raycast(_camera.ScreenPointToRay(originPos), out hit)) return -1;
 
         MeshCollider meshCollider = hit.collider as MeshCollider;
-        if (meshCollider == null || meshCollider.sharedMesh == null) return -1;
+        if (meshCollider == null || meshCollider.sharedMesh == null || meshCollider.gameObject.GetComponent<PaintingCanvas>() == null) return -1;
 
         Mesh mesh = meshCollider.sharedMesh;
         int[] triangles = mesh.triangles;
