@@ -3,6 +3,7 @@ using System.Collections;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using static FirstPersonController;
 
 public class FirstPersonController : MonoBehaviour, ICharacterSignals
@@ -64,11 +65,15 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     [Header("Painting Properties")]
     [SerializeField] private float adjustToCanvasDuration = 0.5f;
     [SerializeField] private float distanceFromCanvas = 1.5f;
+    [SerializeField] private float leanSpeed = 7f;
+    [SerializeField] private float leanLeniency = 10f;
+    [SerializeField] private float leanSnap = 1f;
     #endregion
 
-    public bool canMove = true;
-    public bool canMoveCamera = true;
-    public bool canPlaceCanvas = true;
+    [NonSerialized] public bool canLean = false;
+    [NonSerialized] public bool canMove = true;
+    [NonSerialized] public bool canMoveCamera = true;
+    [NonSerialized] public bool canPlaceCanvas = true;
 
     private int _jumpsRemaining = 1;
     private bool _jumpPressed = false;
@@ -113,16 +118,15 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
             _jumpCoyoteT = MathF.Max(_jumpCoyoteT - Time.deltaTime, 0f);
         }
     }
-    public void AdjustCameraToCanvas()
+    public void AdjustCameraToCanvas(float t)
     {
         if (currentActiveCanvas == null) return;
-        Vector3 b = currentActiveCanvas.transform.forward * -1;
-        Vector3 pos = currentActiveCanvas.transform.position + b * distanceFromCanvas;
-        StartCoroutine(MoveToPosition(pos, adjustToCanvasDuration));
+        StartCoroutine(MoveToPosition(GetCanvasPlayerAnchor(), t));
     }
 
     private IEnumerator MoveToPosition(Vector3 pos, float t)
     {
+        canLean = false;
         Vector3 dist = pos - transform.position;
         float speed = dist.magnitude / t;
 
@@ -145,6 +149,14 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
 
             yield return new WaitForEndOfFrame();
         }
+        canLean = true;
+    }
+
+    private Vector3 GetCanvasPlayerAnchor()
+    {
+        if (currentActiveCanvas == null) return Vector3.zero;
+        Vector3 b = currentActiveCanvas.transform.forward * -1;
+        return currentActiveCanvas.transform.position + b * distanceFromCanvas;
     }
 
     public void EnableCanvasMode(PaintingCanvas canvas)
@@ -156,12 +168,13 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
         currentActiveCanvas = canvas;
-        AdjustCameraToCanvas();
+        AdjustCameraToCanvas(adjustToCanvasDuration);
     }
     public void DisableCanvasMode()
     {
         canPlaceCanvas = true;
         canMove = true;
+        canLean = false;
         canMoveCamera = true;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -197,6 +210,10 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
             .Zip(stopLatch, (m, j) => new Unit())
             .Subscribe(i =>
             {
+                if (canLean && (GetCanvasPlayerAnchor() - transform.position).magnitude < leanSnap)
+                {
+                    AdjustCameraToCanvas(adjustToCanvasDuration / 2f);
+                }
                 _stop.OnNext(Unit.Default);
             }).AddTo(this);
 
@@ -252,6 +269,20 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
                     var currentSpeed = _playerControllerInput.Run.Value ? runSpeed : walkSpeed;
                     horizontalVelocity = i.Move * currentSpeed; //Calculate velocity (direction * speed).
                 }
+                else if (canLean && currentActiveCanvas != null)
+                {
+                    // Leaning
+                    Vector2 p = new Vector2(transform.position.x, transform.position.z);
+                    Vector3 c3d = GetCanvasPlayerAnchor();
+                    Vector2 c = new Vector2(c3d.x, c3d.z);
+                    Vector2 pcn = (p - c).normalized;
+                    Vector2 pcna = Vector2Rotate.rotate(pcn, transform.rotation.eulerAngles.y * Mathf.Deg2Rad);
+                    Vector2 m = new Vector2(i.Move.x, 0f);
+                    float d = (p - c).magnitude;
+                    float a = (-leanLeniency * d) / 1f;
+                    float v = leanSpeed + Mathf.Min(0f, a * Vector2.Dot(m, pcna));
+                    horizontalVelocity = m * v;
+                }
 
                 // Apply
                 var characterVelocity = transform.TransformVector(new Vector3(
@@ -272,6 +303,7 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
 
             }).AddTo(this);
     }
+
     private void HandleCharacterOutputSignals(bool wasGrounded, bool isGrounded)
     {
         _isRunning.Value = _characterController.velocity.magnitude > 0 && _playerControllerInput.Run.Value;

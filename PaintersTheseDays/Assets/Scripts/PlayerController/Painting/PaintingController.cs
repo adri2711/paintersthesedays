@@ -16,7 +16,7 @@ public class PaintingController : MonoBehaviour
 
     void Start()
     {
-        defaultShader = Resources.Load<Shader>("Shaders/DefaultShader");
+        defaultShader = Resources.Load<Shader>("Shaders/xdd");
         _characterSignalsInterfaceTarget = transform.parent.parent.gameObject;
         _firstPersonController = _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>();
         _camera = GetComponent<Camera>();

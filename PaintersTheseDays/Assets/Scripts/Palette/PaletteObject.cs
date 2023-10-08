@@ -38,7 +38,7 @@ public class PaletteObject : MonoBehaviour
         _brushObject = transform.parent.parent.GetComponentInChildren<BrushObject>();
         _model = transform.Find("PaletteModel").GetComponent<MeshRenderer>();
         _model.enabled = false;
-        SetPaints(new Color[] { Color.cyan, Color.yellow, Color.magenta, Color.black, Color.white }, true);
+        SetPaints(new Color[] { Color.cyan, Color.yellow, Color.magenta, Color.black, Color.black }, true);
 
         _characterSignals.PlacedCanvas.Subscribe(w =>
         {
@@ -83,7 +83,7 @@ public class PaletteObject : MonoBehaviour
                 {
                     Object c = Instantiate(_paintChunkPrefab, _model.transform);
                     _mixerPaintChunk = c.AddComponent<PaintChunk>();
-                    _mixerPaintChunk.Setup(paintChunk.paint, true);
+                    _mixerPaintChunk.Setup(new Paint(paintChunk.paint.GetColor()), true);
                     _paintChunks.Add(_mixerPaintChunk);
                     _mixerPaintChunk.timesMixed++;
                 }

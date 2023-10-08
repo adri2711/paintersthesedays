@@ -33,11 +33,25 @@ public class PaintingCanvas : MonoBehaviour
     {
         Event e = Event.current;
         if (!e.isKey || !(e.type == EventType.KeyDown)) return;
-        if (e.keyCode == KeyCode.R)
+        //if (e.keyCode == KeyCode.R)
+        //{
+        //    GenerateVertices();
+        //    GenerateTriangles();
+        //    GenerateMesh();
+        //}
+        //if (e.keyCode == KeyCode.T)
+        //{
+        //    SetAlpha();
+        //}
+    }
+
+    public void SetTransparency(float a)
+    {
+        foreach (Material m in meshRenderer.materials)
         {
-            GenerateVertices();
-            GenerateTriangles();
-            GenerateMesh();
+            Color c = m.color;
+            c.a = a;
+            m.color = c;
         }
     }
 
