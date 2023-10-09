@@ -83,6 +83,11 @@ public class PaintingController : MonoBehaviour
             if (t < 0) continue;
             _firstPersonController.currentActiveCanvas.SetTriangleMaterial(t, _brushes[_selectedBrush].GetMaterial());
         }
+
+        if (brushTris.Count > 0)
+        {
+            _firstPersonController.currentActiveCanvas.ApplyMaterials();
+        }
     }
 
     private int SelectTriangle(Vector3 originPos)

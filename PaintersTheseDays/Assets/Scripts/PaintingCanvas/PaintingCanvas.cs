@@ -29,7 +29,6 @@ public class PaintingCanvas : MonoBehaviour
         GenerateTriangles();
         GenerateMesh();
     }
-    bool xdd = false;
     private void OnGUI()
     {
         Event e = Event.current;
@@ -40,27 +39,24 @@ public class PaintingCanvas : MonoBehaviour
         //    GenerateTriangles();
         //    GenerateMesh();
         //}
-        if (e.keyCode == KeyCode.T)
-        {
-            if (xdd)
-            {
-                SetTransparency(0.5f);
-            }
-            else
-            {
-                SetTransparency(1f);
-            }
-            xdd = !xdd;
-        }
     }
 
     public void SetTransparency(float a)
     {
-        foreach (Material m in meshRenderer.materials)
+        foreach (Material m in materials)
         {
             Color c = m.color;
             c.a = a;
             m.color = c;
+        }
+        ApplyMaterials();
+    }
+    public IEnumerator CanvasTransparencyCoroutine(float init, float target, float t)
+    {
+        for (int i = 0; i <= 20; i++)
+        {
+            SetTransparency(Mathf.Lerp(init, target, i / 20f));
+            yield return new WaitForSeconds(t / 20f);
         }
     }
 
@@ -75,7 +71,13 @@ public class PaintingCanvas : MonoBehaviour
 
     public void SetTriangleMaterial(int id, Material material)
     {
+        float a = materials[id].color.a;
         materials[id] = material;
+        materials[id].color = material.color.WithAlpha(a);
+    }
+
+    public void ApplyMaterials()
+    {
         meshRenderer.materials = materials;
     }
 

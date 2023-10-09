@@ -34,7 +34,8 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     public IObservable<Unit> ExitedCanvas => _exitedCanvas;
     private Subject<Unit> _exitedCanvas;
 
-
+    public IObservable<Unit> MadeCanvasTransparent => _madeCanvasTransparent;
+    private Subject<Unit> _madeCanvasTransparent;
 
     #endregion
 
@@ -62,12 +63,14 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     [Range(-90, 0)][SerializeField] private float minViewAngle = -60f;
     [Range(0, 90)][SerializeField] private float maxViewAngle = 60f;
 
-    [Header("Painting Properties")]
+    [Header("Canvas Properties")]
     [SerializeField] private float adjustToCanvasDuration = 0.5f;
     [SerializeField] private float distanceFromCanvas = 1.5f;
     [SerializeField] private float leanSpeed = 7f;
     [SerializeField] private float leanLeniency = 10f;
     [SerializeField] private float leanSnap = 1f;
+    [SerializeField] private float canvasEnableTransparencyDuration = .4f;
+    [SerializeField] private float canvasDisableTransparencyDuration = .2f;
     #endregion
 
     [NonSerialized] public bool canLean = false;
@@ -75,10 +78,14 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     [NonSerialized] public bool canMoveCamera = true;
     [NonSerialized] public bool canPlaceCanvas = true;
 
+    [NonSerialized] public bool transparentCanvas = false;
+
     private int _jumpsRemaining = 1;
     private bool _jumpPressed = false;
     private float _jumpT = 0;
     private float _jumpCoyoteT = 0;
+    private float _placeT = 0;
+    private float _transparentT = 0;
 
     public PaintingCanvas currentActiveCanvas { get; private set; }
 
@@ -96,10 +103,11 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         _stepped = new Subject<Unit>().AddTo(this);
         _placedCanvas = new Subject<Unit>().AddTo(this);
         _exitedCanvas = new Subject<Unit>().AddTo(this);
+        _madeCanvasTransparent = new Subject<Unit>().AddTo(this);
     }
     private void Start()
     {
-            HandleCanvasPlacement();
+            HandleCanvasInteraction();
             HandleMovement();
             HandleSteppedEvents();
             HandleLook();
@@ -117,6 +125,9 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         {
             _jumpCoyoteT = MathF.Max(_jumpCoyoteT - Time.deltaTime, 0f);
         }
+
+        _placeT = Mathf.Max(_placeT - Time.deltaTime, 0f);
+        _transparentT = Mathf.Max(_placeT - Time.deltaTime, 0f);
     }
     public void AdjustCameraToCanvas(float t)
     {
@@ -172,6 +183,7 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     }
     public void DisableCanvasMode()
     {
+        DisableCanvasTransparency();
         canPlaceCanvas = true;
         canMove = true;
         canLean = false;
@@ -180,14 +192,26 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         Cursor.lockState = CursorLockMode.Locked;
         currentActiveCanvas = null;
     }
-    private void HandleCanvasPlacement()
+    public void EnableCanvasTransparency()
+    {
+        if (!transparentCanvas) StartCoroutine(currentActiveCanvas.CanvasTransparencyCoroutine(1f, .5f, canvasEnableTransparencyDuration));
+        transparentCanvas = true;
+    }
+    public void DisableCanvasTransparency()
+    {
+        if (transparentCanvas) StartCoroutine(currentActiveCanvas.CanvasTransparencyCoroutine(.5f, 1f, canvasDisableTransparencyDuration));
+        transparentCanvas = false;
+    }
+    private void HandleCanvasInteraction()
     {
         var placeCanvasLatch = LatchObservables.Latch(this.UpdateAsObservable(), _playerControllerInput.PlaceCanvas, false);
 
         _playerControllerInput.PlaceCanvas
             .Zip(placeCanvasLatch, (m, j) => new Unit())
+            .Where(i => _placeT == 0)
             .Subscribe(i =>
             {
+                _placeT = adjustToCanvasDuration;
                 if (_characterController.isGrounded && canPlaceCanvas)
                 {
                     _placedCanvas.OnNext(Unit.Default);
@@ -196,6 +220,26 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
                 {
                     _exitedCanvas.OnNext(Unit.Default);
                     DisableCanvasMode();
+                }
+            }).AddTo(this);
+
+        _playerControllerInput.MakeCanvasTransparent
+            .Zip(placeCanvasLatch, (m, j) => new Unit())
+            .Where(i => _transparentT == 0)
+            .Subscribe(i =>
+            {
+                if (canLean)
+                {
+                    _transparentT = canvasEnableTransparencyDuration;
+                    if (transparentCanvas)
+                    {
+                        DisableCanvasTransparency();
+                    }
+                    else
+                    {
+                        EnableCanvasTransparency();
+                    }
+                    _madeCanvasTransparent.OnNext(Unit.Default);
                 }
             }).AddTo(this);
     }
