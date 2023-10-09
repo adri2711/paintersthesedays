@@ -271,17 +271,26 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
                 }
                 else if (canLean && currentActiveCanvas != null)
                 {
-                    // Leaning
-                    Vector2 p = new Vector2(transform.position.x, transform.position.z);
-                    Vector3 c3d = GetCanvasPlayerAnchor();
-                    Vector2 c = new Vector2(c3d.x, c3d.z);
-                    Vector2 pcn = (p - c).normalized;
-                    Vector2 pcna = Vector2Rotate.rotate(pcn, transform.rotation.eulerAngles.y * Mathf.Deg2Rad);
-                    Vector2 m = new Vector2(i.Move.x, 0f);
-                    float d = (p - c).magnitude;
-                    float a = (-leanLeniency * d) / 1f;
-                    float v = leanSpeed + Mathf.Min(0f, a * Vector2.Dot(m, pcna));
-                    horizontalVelocity = m * v;
+                    if (i.Move.x == 0 && i.Move.y < 0)
+                    {
+                        //Step back
+                        _exitedCanvas.OnNext(Unit.Default);
+                        DisableCanvasMode();
+                    }
+                    else
+                    {
+                        // Leaning
+                        Vector2 p = new Vector2(transform.position.x, transform.position.z);
+                        Vector3 c3d = GetCanvasPlayerAnchor();
+                        Vector2 c = new Vector2(c3d.x, c3d.z);
+                        Vector2 pcn = (p - c).normalized;
+                        Vector2 pcna = Vector2Rotate.rotate(pcn, transform.rotation.eulerAngles.y * Mathf.Deg2Rad);
+                        Vector2 m = new Vector2(i.Move.x, 0f);
+                        float d = (p - c).magnitude;
+                        float a = (-leanLeniency * d);
+                        float v = leanSpeed + Mathf.Min(0f, a * Vector2.Dot(m, pcna));
+                        horizontalVelocity = m * v;
+                    }
                 }
 
                 // Apply

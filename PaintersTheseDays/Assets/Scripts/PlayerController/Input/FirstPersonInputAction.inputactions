@@ -49,6 +49,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "TransparentCanvas",
+                    "type": "Button",
+                    "id": "9e023b53-a765-4381-be44-01988c17ba67",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -269,6 +278,17 @@
                     "processors": "",
                     "groups": "Keyboard and Mouse",
                     "action": "PlaceCanvas",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9d5bd6b2-186d-4d78-aec2-b39a044e37de",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TransparentCanvas",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

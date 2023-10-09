@@ -29,6 +29,7 @@ public class PaintingCanvas : MonoBehaviour
         GenerateTriangles();
         GenerateMesh();
     }
+    bool xdd = false;
     private void OnGUI()
     {
         Event e = Event.current;
@@ -39,10 +40,18 @@ public class PaintingCanvas : MonoBehaviour
         //    GenerateTriangles();
         //    GenerateMesh();
         //}
-        //if (e.keyCode == KeyCode.T)
-        //{
-        //    SetAlpha();
-        //}
+        if (e.keyCode == KeyCode.T)
+        {
+            if (xdd)
+            {
+                SetTransparency(0.5f);
+            }
+            else
+            {
+                SetTransparency(1f);
+            }
+            xdd = !xdd;
+        }
     }
 
     public void SetTransparency(float a)

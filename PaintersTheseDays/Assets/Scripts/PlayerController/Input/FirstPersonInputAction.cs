@@ -73,6 +73,15 @@ namespace DyrdaDev.FirstPersonController
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""TransparentCanvas"",
+                    ""type"": ""Button"",
+                    ""id"": ""9e023b53-a765-4381-be44-01988c17ba67"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -295,6 +304,17 @@ namespace DyrdaDev.FirstPersonController
                     ""action"": ""PlaceCanvas"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9d5bd6b2-186d-4d78-aec2-b39a044e37de"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TransparentCanvas"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -336,6 +356,7 @@ namespace DyrdaDev.FirstPersonController
             m_Character_Jump = m_Character.FindAction("Jump", throwIfNotFound: true);
             m_Character_Run = m_Character.FindAction("Run", throwIfNotFound: true);
             m_Character_PlaceCanvas = m_Character.FindAction("PlaceCanvas", throwIfNotFound: true);
+            m_Character_TransparentCanvas = m_Character.FindAction("TransparentCanvas", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -402,6 +423,7 @@ namespace DyrdaDev.FirstPersonController
         private readonly InputAction m_Character_Jump;
         private readonly InputAction m_Character_Run;
         private readonly InputAction m_Character_PlaceCanvas;
+        private readonly InputAction m_Character_TransparentCanvas;
         public struct CharacterActions
         {
             private @FirstPersonInputAction m_Wrapper;
@@ -411,6 +433,7 @@ namespace DyrdaDev.FirstPersonController
             public InputAction @Jump => m_Wrapper.m_Character_Jump;
             public InputAction @Run => m_Wrapper.m_Character_Run;
             public InputAction @PlaceCanvas => m_Wrapper.m_Character_PlaceCanvas;
+            public InputAction @TransparentCanvas => m_Wrapper.m_Character_TransparentCanvas;
             public InputActionMap Get() { return m_Wrapper.m_Character; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -435,6 +458,9 @@ namespace DyrdaDev.FirstPersonController
                 @PlaceCanvas.started += instance.OnPlaceCanvas;
                 @PlaceCanvas.performed += instance.OnPlaceCanvas;
                 @PlaceCanvas.canceled += instance.OnPlaceCanvas;
+                @TransparentCanvas.started += instance.OnTransparentCanvas;
+                @TransparentCanvas.performed += instance.OnTransparentCanvas;
+                @TransparentCanvas.canceled += instance.OnTransparentCanvas;
             }
 
             private void UnregisterCallbacks(ICharacterActions instance)
@@ -454,6 +480,9 @@ namespace DyrdaDev.FirstPersonController
                 @PlaceCanvas.started -= instance.OnPlaceCanvas;
                 @PlaceCanvas.performed -= instance.OnPlaceCanvas;
                 @PlaceCanvas.canceled -= instance.OnPlaceCanvas;
+                @TransparentCanvas.started -= instance.OnTransparentCanvas;
+                @TransparentCanvas.performed -= instance.OnTransparentCanvas;
+                @TransparentCanvas.canceled -= instance.OnTransparentCanvas;
             }
 
             public void RemoveCallbacks(ICharacterActions instance)
@@ -496,6 +525,7 @@ namespace DyrdaDev.FirstPersonController
             void OnJump(InputAction.CallbackContext context);
             void OnRun(InputAction.CallbackContext context);
             void OnPlaceCanvas(InputAction.CallbackContext context);
+            void OnTransparentCanvas(InputAction.CallbackContext context);
         }
     }
 }
