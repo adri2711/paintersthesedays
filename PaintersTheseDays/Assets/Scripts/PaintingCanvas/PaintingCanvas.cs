@@ -33,11 +33,30 @@ public class PaintingCanvas : MonoBehaviour
     {
         Event e = Event.current;
         if (!e.isKey || !(e.type == EventType.KeyDown)) return;
-        if (e.keyCode == KeyCode.R)
+        //if (e.keyCode == KeyCode.R)
+        //{
+        //    GenerateVertices();
+        //    GenerateTriangles();
+        //    GenerateMesh();
+        //}
+    }
+
+    public void SetTransparency(float a)
+    {
+        foreach (Material m in materials)
         {
-            GenerateVertices();
-            GenerateTriangles();
-            GenerateMesh();
+            Color c = m.color;
+            c.a = a;
+            m.color = c;
+        }
+        ApplyMaterials();
+    }
+    public IEnumerator CanvasTransparencyCoroutine(float init, float target, float t)
+    {
+        for (int i = 0; i <= 20; i++)
+        {
+            SetTransparency(Mathf.Lerp(init, target, i / 20f));
+            yield return new WaitForSeconds(t / 20f);
         }
     }
 
@@ -52,7 +71,13 @@ public class PaintingCanvas : MonoBehaviour
 
     public void SetTriangleMaterial(int id, Material material)
     {
+        float a = materials[id].color.a;
         materials[id] = material;
+        materials[id].color = material.color.WithAlpha(a);
+    }
+
+    public void ApplyMaterials()
+    {
         meshRenderer.materials = materials;
     }
 

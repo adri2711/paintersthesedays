@@ -356,6 +356,7 @@ GameObject:
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
+  - component: {fileID: 330585553}
   - component: {fileID: 330585549}
   - component: {fileID: 330585550}
   - component: {fileID: 330585551}
@@ -629,6 +630,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01375a7f8fd5f294cab31f6590fc42d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &330585553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55c6e9121bced5349a79235ffbd2338f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leanSpeed: 1.3
 --- !u!1 &400373490
 GameObject:
   m_ObjectHideFlags: 0
@@ -1959,7 +1973,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2d3bf446b09ba164b9d7873eced34732, type: 2}
+  - {fileID: 2100000, guid: 78ce2eb888828ea4b9976a8f9b7d70f1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2001,6 +2015,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BrushModel
+      objectReference: {fileID: 0}
+    - target: {fileID: 2740397093131251679, guid: 1ef650b73853e1449953b83d120ed883,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3263992692956837221, guid: 1ef650b73853e1449953b83d120ed883,
         type: 3}
@@ -2251,7 +2270,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1120865188}
   - component: {fileID: 1120865189}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Palette
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2372,7 +2391,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1178046110}
   - component: {fileID: 1178046111}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Brush
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2724,10 +2743,10 @@ MonoBehaviour:
   minViewAngle: -85
   maxViewAngle: 85
   adjustToCanvasDuration: 0.4
-  distanceFromCanvas: 3
-  canMove: 1
-  canMoveCamera: 1
-  canPlaceCanvas: 1
+  distanceFromCanvas: 2
+  leanSpeed: 10
+  leanLeniency: 5
+  leanSnap: 1.4
 --- !u!114 &1494605406
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4053,6 +4072,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PaletteModel
+      objectReference: {fileID: 0}
+    - target: {fileID: 6174573615016080288, guid: 98407f319ec233449b07c196841e0d5b,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6844254624408938778, guid: 98407f319ec233449b07c196841e0d5b,
         type: 3}

@@ -3,6 +3,7 @@ using System.Collections;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using static FirstPersonController;
 
 public class FirstPersonController : MonoBehaviour, ICharacterSignals
@@ -33,7 +34,8 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     public IObservable<Unit> ExitedCanvas => _exitedCanvas;
     private Subject<Unit> _exitedCanvas;
 
-
+    public IObservable<Unit> MadeCanvasTransparent => _madeCanvasTransparent;
+    private Subject<Unit> _madeCanvasTransparent;
 
     #endregion
 
@@ -61,19 +63,29 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     [Range(-90, 0)][SerializeField] private float minViewAngle = -60f;
     [Range(0, 90)][SerializeField] private float maxViewAngle = 60f;
 
-    [Header("Painting Properties")]
+    [Header("Canvas Properties")]
     [SerializeField] private float adjustToCanvasDuration = 0.5f;
     [SerializeField] private float distanceFromCanvas = 1.5f;
+    [SerializeField] private float leanSpeed = 7f;
+    [SerializeField] private float leanLeniency = 10f;
+    [SerializeField] private float leanSnap = 1f;
+    [SerializeField] private float canvasEnableTransparencyDuration = .4f;
+    [SerializeField] private float canvasDisableTransparencyDuration = .2f;
     #endregion
 
-    public bool canMove = true;
-    public bool canMoveCamera = true;
-    public bool canPlaceCanvas = true;
+    [NonSerialized] public bool canLean = false;
+    [NonSerialized] public bool canMove = true;
+    [NonSerialized] public bool canMoveCamera = true;
+    [NonSerialized] public bool canPlaceCanvas = true;
+
+    [NonSerialized] public bool transparentCanvas = false;
 
     private int _jumpsRemaining = 1;
     private bool _jumpPressed = false;
     private float _jumpT = 0;
     private float _jumpCoyoteT = 0;
+    private float _placeT = 0;
+    private float _transparentT = 0;
 
     public PaintingCanvas currentActiveCanvas { get; private set; }
 
@@ -91,10 +103,11 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         _stepped = new Subject<Unit>().AddTo(this);
         _placedCanvas = new Subject<Unit>().AddTo(this);
         _exitedCanvas = new Subject<Unit>().AddTo(this);
+        _madeCanvasTransparent = new Subject<Unit>().AddTo(this);
     }
     private void Start()
     {
-            HandleCanvasPlacement();
+            HandleCanvasInteraction();
             HandleMovement();
             HandleSteppedEvents();
             HandleLook();
@@ -112,17 +125,19 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         {
             _jumpCoyoteT = MathF.Max(_jumpCoyoteT - Time.deltaTime, 0f);
         }
+
+        _placeT = Mathf.Max(_placeT - Time.deltaTime, 0f);
+        _transparentT = Mathf.Max(_placeT - Time.deltaTime, 0f);
     }
-    public void AdjustCameraToCanvas()
+    public void AdjustCameraToCanvas(float t)
     {
         if (currentActiveCanvas == null) return;
-        Vector3 b = currentActiveCanvas.transform.forward * -1;
-        Vector3 pos = currentActiveCanvas.transform.position + b * distanceFromCanvas;
-        StartCoroutine(MoveToPosition(pos, adjustToCanvasDuration));
+        StartCoroutine(MoveToPosition(GetCanvasPlayerAnchor(), t));
     }
 
     private IEnumerator MoveToPosition(Vector3 pos, float t)
     {
+        canLean = false;
         Vector3 dist = pos - transform.position;
         float speed = dist.magnitude / t;
 
@@ -145,6 +160,14 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
 
             yield return new WaitForEndOfFrame();
         }
+        canLean = true;
+    }
+
+    private Vector3 GetCanvasPlayerAnchor()
+    {
+        if (currentActiveCanvas == null) return Vector3.zero;
+        Vector3 b = currentActiveCanvas.transform.forward * -1;
+        return currentActiveCanvas.transform.position + b * distanceFromCanvas;
     }
 
     public void EnableCanvasMode(PaintingCanvas canvas)
@@ -156,25 +179,39 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
         currentActiveCanvas = canvas;
-        AdjustCameraToCanvas();
+        AdjustCameraToCanvas(adjustToCanvasDuration);
     }
     public void DisableCanvasMode()
     {
+        DisableCanvasTransparency();
         canPlaceCanvas = true;
         canMove = true;
+        canLean = false;
         canMoveCamera = true;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         currentActiveCanvas = null;
     }
-    private void HandleCanvasPlacement()
+    public void EnableCanvasTransparency()
+    {
+        if (!transparentCanvas) StartCoroutine(currentActiveCanvas.CanvasTransparencyCoroutine(1f, .5f, canvasEnableTransparencyDuration));
+        transparentCanvas = true;
+    }
+    public void DisableCanvasTransparency()
+    {
+        if (transparentCanvas) StartCoroutine(currentActiveCanvas.CanvasTransparencyCoroutine(.5f, 1f, canvasDisableTransparencyDuration));
+        transparentCanvas = false;
+    }
+    private void HandleCanvasInteraction()
     {
         var placeCanvasLatch = LatchObservables.Latch(this.UpdateAsObservable(), _playerControllerInput.PlaceCanvas, false);
 
         _playerControllerInput.PlaceCanvas
             .Zip(placeCanvasLatch, (m, j) => new Unit())
+            .Where(i => _placeT == 0)
             .Subscribe(i =>
             {
+                _placeT = adjustToCanvasDuration;
                 if (_characterController.isGrounded && canPlaceCanvas)
                 {
                     _placedCanvas.OnNext(Unit.Default);
@@ -183,6 +220,26 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
                 {
                     _exitedCanvas.OnNext(Unit.Default);
                     DisableCanvasMode();
+                }
+            }).AddTo(this);
+
+        _playerControllerInput.MakeCanvasTransparent
+            .Zip(placeCanvasLatch, (m, j) => new Unit())
+            .Where(i => _transparentT == 0)
+            .Subscribe(i =>
+            {
+                if (canLean)
+                {
+                    _transparentT = canvasEnableTransparencyDuration;
+                    if (transparentCanvas)
+                    {
+                        DisableCanvasTransparency();
+                    }
+                    else
+                    {
+                        EnableCanvasTransparency();
+                    }
+                    _madeCanvasTransparent.OnNext(Unit.Default);
                 }
             }).AddTo(this);
     }
@@ -197,6 +254,10 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
             .Zip(stopLatch, (m, j) => new Unit())
             .Subscribe(i =>
             {
+                if (canLean && (GetCanvasPlayerAnchor() - transform.position).magnitude < leanSnap)
+                {
+                    AdjustCameraToCanvas(adjustToCanvasDuration / 2f);
+                }
                 _stop.OnNext(Unit.Default);
             }).AddTo(this);
 
@@ -252,6 +313,29 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
                     var currentSpeed = _playerControllerInput.Run.Value ? runSpeed : walkSpeed;
                     horizontalVelocity = i.Move * currentSpeed; //Calculate velocity (direction * speed).
                 }
+                else if (canLean && currentActiveCanvas != null)
+                {
+                    if (i.Move.x == 0 && i.Move.y < 0)
+                    {
+                        //Step back
+                        _exitedCanvas.OnNext(Unit.Default);
+                        DisableCanvasMode();
+                    }
+                    else
+                    {
+                        // Leaning
+                        Vector2 p = new Vector2(transform.position.x, transform.position.z);
+                        Vector3 c3d = GetCanvasPlayerAnchor();
+                        Vector2 c = new Vector2(c3d.x, c3d.z);
+                        Vector2 pcn = (p - c).normalized;
+                        Vector2 pcna = Vector2Rotate.rotate(pcn, transform.rotation.eulerAngles.y * Mathf.Deg2Rad);
+                        Vector2 m = new Vector2(i.Move.x, 0f);
+                        float d = (p - c).magnitude;
+                        float a = (-leanLeniency * d);
+                        float v = leanSpeed + Mathf.Min(0f, a * Vector2.Dot(m, pcna));
+                        horizontalVelocity = m * v;
+                    }
+                }
 
                 // Apply
                 var characterVelocity = transform.TransformVector(new Vector3(
@@ -272,6 +356,7 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
 
             }).AddTo(this);
     }
+
     private void HandleCharacterOutputSignals(bool wasGrounded, bool isGrounded)
     {
         _isRunning.Value = _characterController.velocity.magnitude > 0 && _playerControllerInput.Run.Value;

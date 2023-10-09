@@ -45,6 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   width: 1.3
-  resolution: 1.61
+  resolution: 1.6
   subdivisions: 13
   vertexVariation: 0.6

@@ -26,6 +26,9 @@ public class InputActionBasedFirstPersonControllerInput : PlayerControllerInput
     public override IObservable<Unit> PlaceCanvas => _placeCanvas;
     private Subject<Unit> _placeCanvas;
 
+    public override IObservable<Unit> MakeCanvasTransparent => _makeCanvasTransparent;
+    private Subject<Unit> _makeCanvasTransparent;
+
     #endregion
 
     #region Configuration
@@ -79,5 +82,9 @@ public class InputActionBasedFirstPersonControllerInput : PlayerControllerInput
         //Place Canvas:
         _placeCanvas = new Subject<Unit>().AddTo(this);
         _controls.Character.PlaceCanvas.performed += context => _placeCanvas.OnNext(Unit.Default);
+
+        //Make Canvas Transparent
+        _makeCanvasTransparent = new Subject<Unit>().AddTo(this);
+        _controls.Character.MakeCanvasTransparent.performed += context => _makeCanvasTransparent.OnNext(Unit.Default);
     }
 }

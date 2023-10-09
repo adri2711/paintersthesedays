@@ -16,7 +16,7 @@ public class PaintingController : MonoBehaviour
 
     void Start()
     {
-        defaultShader = Resources.Load<Shader>("Shaders/DefaultShader");
+        defaultShader = Resources.Load<Shader>("Shaders/xdd");
         _characterSignalsInterfaceTarget = transform.parent.parent.gameObject;
         _firstPersonController = _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>();
         _camera = GetComponent<Camera>();
@@ -82,6 +82,11 @@ public class PaintingController : MonoBehaviour
         {
             if (t < 0) continue;
             _firstPersonController.currentActiveCanvas.SetTriangleMaterial(t, _brushes[_selectedBrush].GetMaterial());
+        }
+
+        if (brushTris.Count > 0)
+        {
+            _firstPersonController.currentActiveCanvas.ApplyMaterials();
         }
     }
 
