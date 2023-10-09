@@ -2743,10 +2743,12 @@ MonoBehaviour:
   minViewAngle: -85
   maxViewAngle: 85
   adjustToCanvasDuration: 0.4
-  distanceFromCanvas: 2
+  distanceFromCanvas: 2.3
   leanSpeed: 10
   leanLeniency: 5
   leanSnap: 1.4
+  canvasEnableTransparencyDuration: 0.4
+  canvasDisableTransparencyDuration: 0.2
 --- !u!114 &1494605406
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4067,6 +4069,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5670174374056415861, guid: 98407f319ec233449b07c196841e0d5b,
+        type: 3}
+      propertyPath: m_DynamicOccludee
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5670174374056415861, guid: 98407f319ec233449b07c196841e0d5b,
+        type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6174573615016080288, guid: 98407f319ec233449b07c196841e0d5b,
         type: 3}
