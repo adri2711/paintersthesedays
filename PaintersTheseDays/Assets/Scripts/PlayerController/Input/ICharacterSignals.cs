@@ -36,6 +36,9 @@ public interface ICharacterSignals
     /// </summary>
     IObservable<Unit> Stepped { get; }
     IObservable<Unit> PlacedCanvas { get; }
+    IObservable<Unit> EnteredCanvas { get; }
     IObservable<Unit> ExitedCanvas { get; }
+    IObservable<Unit> RemovedCanvas { get; }
+    IObservable<Unit> EditedCanvas { get; }
     IObservable<Unit> MadeCanvasTransparent { get; }
 }

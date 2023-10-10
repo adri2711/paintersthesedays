@@ -30,9 +30,17 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
 
     public IObservable<Unit> PlacedCanvas => _placedCanvas;
     private Subject<Unit> _placedCanvas;
+    public IObservable<Unit> EnteredCanvas => _enteredCanvas;
+    private Subject<Unit> _enteredCanvas;
 
     public IObservable<Unit> ExitedCanvas => _exitedCanvas;
     private Subject<Unit> _exitedCanvas;
+
+    public IObservable<Unit> RemovedCanvas => _removedCanvas;
+    private Subject<Unit> _removedCanvas;
+
+    public IObservable<Unit> EditedCanvas => _editedCanvas;
+    private Subject<Unit> _editedCanvas;
 
     public IObservable<Unit> MadeCanvasTransparent => _madeCanvasTransparent;
     private Subject<Unit> _madeCanvasTransparent;
@@ -77,8 +85,10 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     [NonSerialized] public bool canMove = true;
     [NonSerialized] public bool canMoveCamera = true;
     [NonSerialized] public bool canPlaceCanvas = true;
-
+    [NonSerialized] public bool canEditCanvas = true;
     [NonSerialized] public bool transparentCanvas = false;
+
+    public static PaintingData paintingSave;
 
     private int _jumpsRemaining = 1;
     private bool _jumpPressed = false;
@@ -102,7 +112,10 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         _landed = new Subject<Unit>().AddTo(this);
         _stepped = new Subject<Unit>().AddTo(this);
         _placedCanvas = new Subject<Unit>().AddTo(this);
+        _enteredCanvas = new Subject<Unit>().AddTo(this);
         _exitedCanvas = new Subject<Unit>().AddTo(this);
+        _removedCanvas = new Subject<Unit>().AddTo(this);
+        _editedCanvas = new Subject<Unit>().AddTo(this);
         _madeCanvasTransparent = new Subject<Unit>().AddTo(this);
     }
     private void Start()
@@ -173,6 +186,8 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     public void EnableCanvasMode(PaintingCanvas canvas)
     {
         if (canvas == null) return;
+        _enteredCanvas.OnNext(Unit.Default);
+        canEditCanvas = false;
         canPlaceCanvas = false;
         canMove = false;
         canMoveCamera = false;
@@ -184,13 +199,24 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     public void DisableCanvasMode()
     {
         DisableCanvasTransparency();
-        canPlaceCanvas = true;
+        if (currentActiveCanvas != null)
+        {
+            paintingSave = currentActiveCanvas.SavePainting();
+        }
+        canEditCanvas = true;
         canMove = true;
         canLean = false;
         canMoveCamera = true;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         currentActiveCanvas = null;
+    }
+    public void RemoveCanvas()
+    {
+        _exitedCanvas.OnNext(Unit.Default);
+        currentActiveCanvas.Remove();
+        DisableCanvasMode();
+        canPlaceCanvas = true;
     }
     public void EnableCanvasTransparency()
     {
@@ -208,19 +234,30 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
 
         _playerControllerInput.PlaceCanvas
             .Zip(placeCanvasLatch, (m, j) => new Unit())
-            .Where(i => _placeT == 0)
+            .Where(i => _placeT == 0 && _characterController.isGrounded)
             .Subscribe(i =>
             {
                 _placeT = adjustToCanvasDuration;
-                if (_characterController.isGrounded && canPlaceCanvas)
+                if (canPlaceCanvas)
                 {
                     _placedCanvas.OnNext(Unit.Default);
                 }
-                else
+                else if (canEditCanvas)
+                {
+                    _editedCanvas.OnNext(Unit.Default);
+                }
+                else if (currentActiveCanvas != null)
                 {
                     _exitedCanvas.OnNext(Unit.Default);
                     DisableCanvasMode();
                 }
+            }).AddTo(this);
+
+        _playerControllerInput.RemoveCanvas
+            .Zip(placeCanvasLatch, (m, j) => new Unit())
+            .Subscribe(i =>
+            {
+                _removedCanvas.OnNext(Unit.Default);
             }).AddTo(this);
 
         _playerControllerInput.MakeCanvasTransparent

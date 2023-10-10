@@ -145,4 +145,21 @@ public class PaintingCanvas : MonoBehaviour
             gameObject.AddComponent<MeshCollider>();
         }
     }
+
+    public void LoadPainting(PaintingData paintingData)
+    {
+        vertices = paintingData.vertices;
+        triangles = paintingData.triangles;
+        materials = paintingData.materials;
+    }
+
+    public PaintingData SavePainting() 
+    {
+        return new PaintingData(vertices, triangles, materials);
+    }
+
+    public void Remove()
+    {
+        Destroy(gameObject);
+    }
 }

@@ -1,11 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using UniRx;
 using UniRx.Triggers;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class PaletteObject : MonoBehaviour
 {
@@ -40,7 +38,7 @@ public class PaletteObject : MonoBehaviour
         _model.enabled = false;
         SetPaints(new Color[] { Color.cyan, Color.yellow, Color.magenta, Color.black, Color.black }, true);
 
-        _characterSignals.PlacedCanvas.Subscribe(w =>
+        _characterSignals.EnteredCanvas.Subscribe(w =>
         {
             Activate();
         }).AddTo(this);

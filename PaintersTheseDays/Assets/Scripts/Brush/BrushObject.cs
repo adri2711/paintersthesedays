@@ -32,7 +32,7 @@ public class BrushObject : MonoBehaviour
             }
         }
 
-        _characterSignals.PlacedCanvas.Subscribe(w =>
+        _characterSignals.EnteredCanvas.Subscribe(w =>
         {
             Activate();
         }).AddTo(this);
