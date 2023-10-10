@@ -409,7 +409,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 1000
-  field of view: 100
+  field of view: 90
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -566,8 +566,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fovChangeSpeed: 3.5
-  runningFovIncrease: 12
-  defaultFov: 100
+  runningFovIncrease: 8
+  defaultFov: 90
 --- !u!114 &330585550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2285,7 +2285,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1120865187}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2744,7 +2744,7 @@ MonoBehaviour:
   maxViewAngle: 85
   adjustToCanvasDuration: 0.4
   distanceFromCanvas: 2.3
-  leanSpeed: 10
+  leanSpeed: 13
   leanLeniency: 5
   leanSnap: 1.4
   canvasEnableTransparencyDuration: 0.4
