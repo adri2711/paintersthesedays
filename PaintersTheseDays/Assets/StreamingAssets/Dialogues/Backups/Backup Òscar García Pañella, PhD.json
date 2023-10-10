@@ -2,15 +2,15 @@
   "dialogueContent": 
   [
     {
-      "chosenOptionsSequenceNeeded": "",
-      "sentences": 
-        [
-          "IA class", 
-          "Dies from cringe",
-          "Your eyes are better",
-          "Dies from cringe again",
-          "Chamfer"
-        ],
+	  "chosenOptionsSequenceNeeded": "",
+	  "sentences": 
+	  [
+		"IA class", 
+		"Dies from cringe",
+		"Your eyes are better",
+		"Dies from cringe again",
+		"Chamfer"
+	  ],
       "sentencesPosOptions": 
       [
         {
@@ -57,11 +57,21 @@
       [
         "Fuck it"
       ],
+	  "sentencesPosOptions": 
+      [
+        {
+          "sentences":
+          [
+            "OOOOOOOOSSSSSSSCCCCCCCCCAAAAAAARRRRR!!!!!!!!!"
+          ],
+          "selectedOptionNumber": "00"
+        }
+      ],
       "dialogueOptions": 
       [
         {
           "option": "Òscar García Pañella, PhD.",
-          "optionNumber": "0"
+          "optionNumber": "00"
         }
       ]
     }

@@ -119,18 +119,18 @@ namespace Managers
                     text.gameObject.SetActive(false);
                 }
 
+                foreach (Image arrow in _arrows)
+                {
+                    arrow.gameObject.SetActive(false);
+                }
+
                 foreach (DialoguePosOption posOption in _dialogueContent.sentencesPosOptions)
                 {
-                    if (_dialogue.chosenOptions[^1].ToString() == posOption.selectedOptionNumber)
+                    if (_dialogue.chosenOptions.ToString() == posOption.selectedOptionNumber)
                     {
                         LoadSentences(posOption.sentences);
                         break;
                     }
-                }
-
-                foreach (Image arrow in _arrows)
-                {
-                    arrow.gameObject.SetActive(false);
                 }
 
                 _optionSelected = 0;
