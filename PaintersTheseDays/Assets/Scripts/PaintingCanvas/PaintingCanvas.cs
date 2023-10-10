@@ -21,13 +21,17 @@ public class PaintingCanvas : MonoBehaviour
     public int subdivisions = 11;
     Vector2 size;
     public float vertexVariation = 0.75f;
-    private void Start()
+
+    public void Generate(bool first = false)
     {
         meshFilter = gameObject.AddComponent<MeshFilter>();
         meshRenderer = gameObject.AddComponent<MeshRenderer>();
-        GenerateVertices();
-        GenerateTriangles();
-        GenerateMesh();
+        if (first)
+        {
+            GenerateVertices();
+            GenerateTriangles();
+        }
+        GenerateMesh(first);
     }
     private void OnGUI()
     {
@@ -111,7 +115,7 @@ public class PaintingCanvas : MonoBehaviour
         triangles = triangulation.Triangulate(vertices);
     }
 
-    private void GenerateMesh()
+    private void GenerateMesh(bool first = false)
     {
         Mesh mesh = meshFilter.mesh;
 
@@ -126,7 +130,7 @@ public class PaintingCanvas : MonoBehaviour
         mesh.uv = meshUVs.ToArray();
 
         mesh.subMeshCount = triangles.Count;
-        materials = new Material[triangles.Count];
+        if (materials == null) materials = new Material[triangles.Count];
         for (int i = 0; i < triangles.Count; i++)
         {
             meshTriangles.Add(new int[3]);
@@ -134,7 +138,10 @@ public class PaintingCanvas : MonoBehaviour
             meshTriangles[i][1] = (triangles[i].b.id);
             meshTriangles[i][2] = (triangles[i].c.id);
             mesh.SetTriangles(meshTriangles[i], i);
-            materials[i] = Paint.GenerateCanvasColor().GetMaterial();
+            if (first)
+            {
+                materials[i] = Paint.GenerateCanvasColor().GetMaterial();
+            }
         }
         meshRenderer.materials = materials;
 

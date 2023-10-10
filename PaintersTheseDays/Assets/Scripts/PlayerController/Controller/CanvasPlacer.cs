@@ -41,7 +41,6 @@ public class CanvasPlacer : MonoBehaviour
 
     private void Place()
     {
-        //if (CheckIfClickingCanvas()) return;
         Quaternion rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f);
         PaintingCanvas paintingCanvasObject = Instantiate(_paintingCanvasPrefab, transform.position, rotation).GetComponent<PaintingCanvas>();
 
@@ -65,6 +64,12 @@ public class CanvasPlacer : MonoBehaviour
             paintingCanvasObject.transform.position = new Vector3(hit.point.x, hit.point.y + paintingCanvasObject.width * paintingCanvasObject.resolution, hit.point.z);
         }
 
+        bool generate = FirstPersonController.paintingSave == null;
+        if (!generate)
+        {
+            paintingCanvasObject.LoadPainting(FirstPersonController.paintingSave);
+        }
+        paintingCanvasObject.Generate(generate);
         _firstPersonController.EnableCanvasMode(paintingCanvasObject);
     }
 
