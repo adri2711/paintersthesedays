@@ -41,7 +41,7 @@ public class CanvasPlacer : MonoBehaviour
 
     private void Place()
     {
-        Quaternion rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f);
+        Quaternion rotation = Quaternion.Euler(15f, transform.rotation.eulerAngles.y, 0f);
         PaintingCanvas paintingCanvasObject = Instantiate(_paintingCanvasPrefab, transform.position, rotation).GetComponent<PaintingCanvas>();
 
         float thickness = .5f;
@@ -61,7 +61,7 @@ public class CanvasPlacer : MonoBehaviour
 
         if (Physics.BoxCast(raycastPos, canvasHalfExtents, transform.TransformDirection(Vector3.down), out hit, rotation, 15f))
         {
-            paintingCanvasObject.transform.position = new Vector3(hit.point.x, hit.point.y + paintingCanvasObject.width * paintingCanvasObject.resolution, hit.point.z);
+            paintingCanvasObject.transform.position = new Vector3(hit.point.x, hit.point.y + 1f, hit.point.z);
         }
 
         bool generate = FirstPersonController.paintingSave == null;

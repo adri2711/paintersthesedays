@@ -155,10 +155,9 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         float speed = dist.magnitude / t;
 
         float d = (currentActiveCanvas.transform.position + new Vector3(0f, currentActiveCanvas.width * currentActiveCanvas.resolution * 0.5f, 0f) - _camera.transform.position).magnitude;
-        float h = currentActiveCanvas.transform.position.y + currentActiveCanvas.width * currentActiveCanvas.resolution * 0.5f - _camera.transform.position.y;
-        float vAngle = Mathf.Rad2Deg * Mathf.Asin(h / d) * 0.5f;
+        float h = currentActiveCanvas.transform.position.y + currentActiveCanvas.width * currentActiveCanvas.resolution - _camera.transform.position.y;
         Vector3 startRotation = new Vector3(_camera.transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, 0f);
-        Vector3 canvasRotation = currentActiveCanvas.transform.rotation.eulerAngles + new Vector3(-vAngle, 0f, 0f);
+        Vector3 canvasRotation = currentActiveCanvas.transform.rotation.eulerAngles + new Vector3(-8f, 0f, 0f);
 
         for (float f = 0f; f <= t; f += Time.deltaTime)
         {
