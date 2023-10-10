@@ -95,7 +95,7 @@ public class PaintingCanvas : MonoBehaviour
             for (int j = 0; j <= subdivisionsY; j++)
             {
                 int id = i * (subdivisionsY + 1) + j;
-                Vector2 pos = new Vector2(-size.x + (size.x * 2f / subdivisions) * i, -size.y + (size.y * 2f / subdivisionsY) * j);
+                Vector2 pos = new Vector2(-size.x + (size.x * 2f / subdivisions) * i, size.y * 2f / subdivisionsY * j);
                 if (i > 0 && i < subdivisions) {
                     //pos += Random.insideUnitCircle * size * new Vector2(vertexVariation / subdivisions, vertexVariation / subdivisionsY);
                     pos.x += Random.Range(-1f, 1f) * size.x * vertexVariation / subdivisions;
