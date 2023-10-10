@@ -32,5 +32,6 @@ public abstract class PlayerControllerInput : MonoBehaviour
     /// </summary>
     public abstract IObservable<Vector2> Look { get; }
     public abstract IObservable<Unit> PlaceCanvas { get; }
+    public abstract IObservable<Unit> RemoveCanvas { get; }
     public abstract IObservable<Unit> MakeCanvasTransparent { get; }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UniRx;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class CanvasPlacer : MonoBehaviour
@@ -9,6 +10,7 @@ public class CanvasPlacer : MonoBehaviour
     private GameObject _characterSignalsInterfaceTarget;
     private ICharacterSignals _characterSignals;
     private GameObject _paintingCanvasPrefab;
+    private FirstPersonController _firstPersonController;
 
     [SerializeField] float canvasPlacementDistance = 3f;
     [SerializeField] float canvasEditingDistance = 5f;
@@ -18,6 +20,7 @@ public class CanvasPlacer : MonoBehaviour
         _characterSignalsInterfaceTarget = transform.parent.parent.gameObject;
         _characterSignals = _characterSignalsInterfaceTarget.GetComponent<ICharacterSignals>();
         _paintingCanvasPrefab = Resources.Load("Prefab/PaintingCanvas") as GameObject;
+        _firstPersonController = _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>();
     }
 
     private void Start()
@@ -26,11 +29,18 @@ public class CanvasPlacer : MonoBehaviour
         {
             Place();
         }).AddTo(this);
+        _characterSignals.EditedCanvas.Subscribe(w =>
+        {
+            Edit();
+        }).AddTo(this);
+        _characterSignals.RemovedCanvas.Subscribe(w =>
+        {
+            Remove();
+        }).AddTo(this);
     }
 
     private void Place()
     {
-        if (CheckIfClickingCanvas()) return;
         Quaternion rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f);
         PaintingCanvas paintingCanvasObject = Instantiate(_paintingCanvasPrefab, transform.position, rotation).GetComponent<PaintingCanvas>();
 
@@ -54,10 +64,45 @@ public class CanvasPlacer : MonoBehaviour
             paintingCanvasObject.transform.position = new Vector3(hit.point.x, hit.point.y + paintingCanvasObject.width * paintingCanvasObject.resolution, hit.point.z);
         }
 
-        _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>().EnableCanvasMode(paintingCanvasObject);
+        bool generate = FirstPersonController.paintingSave == null;
+        if (!generate)
+        {
+            paintingCanvasObject.LoadPainting(FirstPersonController.paintingSave);
+        }
+        paintingCanvasObject.Generate(generate);
+        _firstPersonController.EnableCanvasMode(paintingCanvasObject);
     }
 
-    private bool CheckIfClickingCanvas()
+    private void Edit()
+    {
+        PaintingCanvas colliderCanvas = CheckIfClickingCanvas();
+        if (colliderCanvas != null)
+        {
+            _firstPersonController.EnableCanvasMode(colliderCanvas);
+        }
+    }
+
+    private void Remove()
+    {
+        PaintingCanvas colliderCanvas = CheckIfClickingCanvas();
+        if (colliderCanvas != null)
+        {
+            if (_firstPersonController.currentActiveCanvas != null)
+            {
+                _firstPersonController.RemoveCanvas();
+            }
+            else
+            {
+                FirstPersonController.paintingSave = colliderCanvas.SavePainting();
+                colliderCanvas.Remove();
+                _firstPersonController.DisableCanvasMode();
+                _firstPersonController.canPlaceCanvas = true;
+            }
+        }
+    }
+
+
+    private PaintingCanvas CheckIfClickingCanvas()
     {
         RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.forward, out hit, canvasEditingDistance))
@@ -65,10 +110,9 @@ public class CanvasPlacer : MonoBehaviour
             PaintingCanvas colliderCanvas = hit.collider.GetComponent<PaintingCanvas>();
             if (colliderCanvas != null)
             {
-                _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>().EnableCanvasMode(colliderCanvas);
-                return true;
+                return colliderCanvas;
             }
         }
-        return false;
+        return null;
     }
 }

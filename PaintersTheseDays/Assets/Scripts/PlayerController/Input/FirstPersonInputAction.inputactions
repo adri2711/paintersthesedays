@@ -51,6 +51,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "RemoveCanvas",
+                    "type": "Button",
+                    "id": "5886c6f2-8e15-4c5f-93f5-80e4bedd47f7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "MakeCanvasTransparent",
                     "type": "Button",
                     "id": "9e023b53-a765-4381-be44-01988c17ba67",
@@ -300,6 +309,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "MakeCanvasTransparent",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e5aa75a8-c5b3-41bc-b6d0-8c1b3c25630c",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RemoveCanvas",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "83b1b018-40d0-4c83-843d-3344c1c4aaff",
+                    "path": "<Keyboard>/quote",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RemoveCanvas",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
