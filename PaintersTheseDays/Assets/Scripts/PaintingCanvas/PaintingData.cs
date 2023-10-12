@@ -5,13 +5,13 @@ using UnityEngine;
 [System.Serializable]
 public class PaintingData
 {
-    public List<Vertex> vertices;
-    public List<Triangle> triangles;
+    public Vertex[] vertices;
+    public Triangle[] triangles;
     public Material[] materials;
     public PaintingData(List<Vertex> vertices, List<Triangle> triangles, Material[] materials)
     {
-        this.vertices = vertices;
-        this.triangles = triangles;
+        this.vertices = vertices.ToArray();
+        this.triangles = triangles.ToArray();
         this.materials = materials;
     }
 }

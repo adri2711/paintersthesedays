@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -155,8 +156,8 @@ public class PaintingCanvas : MonoBehaviour
 
     public void LoadPainting(PaintingData paintingData)
     {
-        vertices = paintingData.vertices;
-        triangles = paintingData.triangles;
+        vertices = paintingData.vertices.ToList();
+        triangles = paintingData.triangles.ToList();
         materials = paintingData.materials;
     }
 
