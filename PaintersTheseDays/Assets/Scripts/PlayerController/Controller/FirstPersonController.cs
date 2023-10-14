@@ -120,10 +120,10 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     }
     private void Start()
     {
-            HandleCanvasInteraction();
-            HandleMovement();
-            HandleSteppedEvents();
-            HandleLook();
+        HandleCanvasInteraction();
+        HandleMovement();
+        HandleSteppedEvents();
+        HandleLook();
     }
 
     private void Update()
