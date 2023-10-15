@@ -57,13 +57,17 @@ public class CanvasPlacer : MonoBehaviour
         if (questPoint != null)
         {
             paintingCanvasObject.transform.position = questPoint.quest.position;
-            paintingCanvasObject.transform.rotation = Quaternion.Euler(0f, questPoint.quest.yRotation, 0f);
+            paintingCanvasObject.transform.rotation = Quaternion.Euler(15f, questPoint.quest.yRotation, 0f);
 
-            if (questPoint.quest.hasIncompletePainting)
+            if (FirstPersonController.paintingSave != null)
+            {
+                paintingCanvasObject.LoadPainting(FirstPersonController.paintingSave);
+            }
+            else if (questPoint.quest.hasIncompletePainting)
             {
                 paintingCanvasObject.LoadPainting(questPoint.quest.incompletePainting);
             }
-            paintingCanvasObject.Generate();
+            paintingCanvasObject.Generate(!questPoint.quest.hasIncompletePainting && FirstPersonController.paintingSave == null);
         }
         else
         {

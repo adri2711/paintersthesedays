@@ -9,4 +9,5 @@ public class Quest
     public Brush[] brushes;
     public PaintingData incompletePainting;
     public bool hasIncompletePainting = false;
+    public float leniency = 127f;
 }

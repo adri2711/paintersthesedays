@@ -16,6 +16,7 @@ public class PaintingCanvas : MonoBehaviour
     List<int[]> meshTriangles = new List<int[]>();
     List<Vector2> meshUVs = new List<Vector2>();
     Material[] materials;
+    int strokeCount;
 
     public float width = 2f;
     public float resolution = 1.61f;
@@ -65,13 +66,18 @@ public class PaintingCanvas : MonoBehaviour
         }
     }
 
-    public void SetMaterialToTriangles(int[] id, Material material)
+    public void SetMaterialToTriangles(HashSet<int> id, Material material)
     {
         foreach (int i in id)
         {
+            if (i < 0) continue;
+            float a = materials[i].color.a;
             materials[i] = material;
+            materials[i].color = material.color.WithAlpha(a);
+            
         }
         meshRenderer.materials = materials;
+        strokeCount++;
     }
 
     public void SetTriangleMaterial(int id, Material material)
@@ -79,6 +85,7 @@ public class PaintingCanvas : MonoBehaviour
         float a = materials[id].color.a;
         materials[id] = material;
         materials[id].color = material.color.WithAlpha(a);
+        strokeCount++;
     }
 
     public void ApplyMaterials()
@@ -142,6 +149,7 @@ public class PaintingCanvas : MonoBehaviour
             if (first)
             {
                 materials[i] = Paint.GenerateCanvasColor().GetMaterial();
+                materials[i].name = "base";
             }
         }
         meshRenderer.materials = materials;
@@ -159,11 +167,12 @@ public class PaintingCanvas : MonoBehaviour
         vertices = paintingData.vertices.ToList();
         triangles = paintingData.triangles.ToList();
         materials = paintingData.materials;
+        strokeCount = paintingData.strokeCount;
     }
 
     public PaintingData SavePainting() 
     {
-        return new PaintingData(vertices, triangles, materials);
+        return new PaintingData(vertices, triangles, materials,strokeCount);
     }
 
     public void Remove()
