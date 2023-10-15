@@ -94,21 +94,4 @@ public class DelaunayTriangulation
 
         return _triangles;
     }
-    public List<List<int>> GenerateAdjacency()
-    {
-        for (int i = 0; i < _triangles.Count; i++)
-        {
-            int a = 0;
-            _adjcacentTriangles.Add(new List<int>());
-            for (int j = 0; j < _triangles.Count && a < 3; j++)
-            {
-                if (_triangles[i].IsAdjacent(_triangles[j]))
-                {
-                    a++;
-                    _adjcacentTriangles[i].Add(j);
-                }
-            }
-        }
-        return _adjcacentTriangles;
-    }
 }

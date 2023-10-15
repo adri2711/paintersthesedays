@@ -20,6 +20,7 @@ public class QuestPoint : MonoBehaviour
     public float activationRange = 8f;
     HashSet<Color> refColors = new HashSet<Color>();
     HashSet<Color> paintingColors = new HashSet<Color>();
+    Vector3 gradient;
 
     void Start()
     {
@@ -89,6 +90,8 @@ public class QuestPoint : MonoBehaviour
             bad = false;
         }
 
+        CalculatePaintingGradient(paintingData, quest.leniency);
+
         if (bad)
         {
             Debug.Log("bad");
@@ -98,19 +101,68 @@ public class QuestPoint : MonoBehaviour
             Debug.Log("good");
         }
     }
+
+    private Vector3 CalculatePaintingGradient(PaintingData paintingData, float leniency)
+    {
+        Vector3 paintingGradient = Vector3.zero;
+
+        List<List<int>> adj = paintingData.GenerateAdjacency();
+
+        for(int i = 0; i < adj.Count; i++)
+        {
+            Vector3 avg = Vector3.zero;
+            for (int j = 0; j < adj[i].Count; j++)
+            {
+                avg += CTV(paintingData.materials[j].color);
+            }
+            Vector3 g = (avg / adj[i].Count) - CTV(paintingData.materials[i].color);
+        }
+        
+        return paintingGradient;
+    }
     private IEnumerator ProcessRef(float leniency)
     {
+        gradient = Vector3.zero;
         for (int i = 0; i < refImage.width; i++)
         {
             for (int j = 0; j < refImage.height; j++)
             {
-                Color p = ReduceColor(refImage.GetPixel(i, j), leniency);
+                //Reduce color
+                Color p =ReduceColor(refImage.GetPixel(i, j), leniency);
                 refImage.SetPixel(i, j, p);
                 refColors.Add(p);
+
+                //Find gradient
+                Vector3 avg = Vector3.zero;
+                int c = 0;
+                if (i < refImage.width - 1)
+                {
+                    avg += CTV(ReduceColor(refImage.GetPixel(i + 1, j), leniency));
+                    c++;
+                }
+                if (j < refImage.height - 1)
+                {
+                    avg += CTV(ReduceColor(refImage.GetPixel(i, j + 1), leniency));
+                    c++;
+                }
+                if (i > 0)
+                {
+                    avg += CTV(ReduceColor(refImage.GetPixel(i - 1, j), leniency));
+                    c++;
+                }
+                if (j > 0)
+                {
+                    avg += CTV(ReduceColor(refImage.GetPixel(i, j - 1), leniency));
+                    c++;
+                }
+                Vector3 g = (avg / c) - CTV(p);
+                gradient += g;
             }
             yield return new WaitForEndOfFrame();
         }
         refImage.Apply();
+
+        gradient /= refImage.width * refImage.height;
     }
 
     private Color ReduceColor(Color c, float leniency)
@@ -119,6 +171,11 @@ public class QuestPoint : MonoBehaviour
         float g = (Mathf.Floor((c.g * 255f) / leniency) * leniency) / 255f;
         float b = (Mathf.Floor((c.b * 255f) / leniency) * leniency) / 255f;
         return new Color(r, g, b);
+    }
+
+    private Vector3 CTV(Color c)
+    {
+        return new Vector3(c.r, c.g, c.b);
     }
 
     private void ActivatePoint()

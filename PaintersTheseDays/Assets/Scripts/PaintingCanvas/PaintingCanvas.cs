@@ -74,7 +74,6 @@ public class PaintingCanvas : MonoBehaviour
             float a = materials[i].color.a;
             materials[i] = material;
             materials[i].color = material.color.WithAlpha(a);
-            
         }
         meshRenderer.materials = materials;
         strokeCount++;
