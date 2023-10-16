@@ -89,7 +89,7 @@ public class QuestPoint : MonoBehaviour
         float scale = (refImage.height * refImage.width) / paintingData.materials.Length;
         float gDiff = Mathf.Abs(((gradient.x + gradient.y + gradient.z) / 3f) * scale - ((pg.x + pg.y + pg.z) / 3f));
         Debug.Log("Painting Gradient: " + pg + ", Ref Gradient: " + gradient * scale + ", Diff: " + gDiff);
-        if (paintingColors.Count > 1 && paintingData.strokeCount > 800 && gDiff < 0.1f)
+        if (paintingColors.Count > 1 && paintingData.strokeCount > 800 && gDiff < 0.075f)
         {
             bad = false;
         }
