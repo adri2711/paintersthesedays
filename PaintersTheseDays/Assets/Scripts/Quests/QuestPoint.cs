@@ -85,12 +85,14 @@ public class QuestPoint : MonoBehaviour
 
         bool bad = true;
 
-        if (paintingColors.Count > 1 && paintingData.strokeCount > 800)
+        Vector3 pg = CalculatePaintingGradient(paintingData, quest.leniency);
+        float scale = (refImage.height * refImage.width) / paintingData.materials.Length;
+        float gDiff = Mathf.Abs(((gradient.x + gradient.y + gradient.z) / 3f) * scale - ((pg.x + pg.y + pg.z) / 3f));
+        Debug.Log("Painting Gradient: " + pg + ", Ref Gradient: " + gradient * scale + ", Diff: " + gDiff);
+        if (paintingColors.Count > 1 && paintingData.strokeCount > 800 && gDiff < 0.1f)
         {
             bad = false;
         }
-
-        CalculatePaintingGradient(paintingData, quest.leniency);
 
         if (bad)
         {
@@ -113,11 +115,12 @@ public class QuestPoint : MonoBehaviour
             Vector3 avg = Vector3.zero;
             for (int j = 0; j < adj[i].Count; j++)
             {
-                avg += CTV(paintingData.materials[j].color);
+                avg += CTV(ReduceColor(paintingData.materials[j].color, leniency));
             }
-            Vector3 g = (avg / adj[i].Count) - CTV(paintingData.materials[i].color);
+            Vector3 g = (avg / adj[i].Count) - CTV(ReduceColor(paintingData.materials[i].color, leniency));
+            paintingGradient += Abs(g);
         }
-        
+        paintingGradient /= adj.Count;
         return paintingGradient;
     }
     private IEnumerator ProcessRef(float leniency)
@@ -156,12 +159,11 @@ public class QuestPoint : MonoBehaviour
                     c++;
                 }
                 Vector3 g = (avg / c) - CTV(p);
-                gradient += g;
+                gradient += Abs(g);
             }
             yield return new WaitForEndOfFrame();
         }
         refImage.Apply();
-
         gradient /= refImage.width * refImage.height;
     }
 
@@ -176,6 +178,11 @@ public class QuestPoint : MonoBehaviour
     private Vector3 CTV(Color c)
     {
         return new Vector3(c.r, c.g, c.b);
+    }
+
+    private Vector3 Abs(Vector3 v)
+    {
+        return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
     }
 
     private void ActivatePoint()
