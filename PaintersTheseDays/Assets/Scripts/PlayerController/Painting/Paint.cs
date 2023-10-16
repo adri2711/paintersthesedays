@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Paint
 {
-    bool _primary = false;
-    Material _material;
-    Color _color;
-    
+    public bool primary = false;
+    public Color color;
+    Material material;
+
     public static Paint GenerateCanvasColor()
     {
         Color c = new Color(.824f, .761f, .596f, 1f);
@@ -20,7 +21,7 @@ public class Paint
     }
     public static Paint CombinePaint(Paint p1, Paint p2, float w1 = .5f)
     {
-        return new Paint(CombineColors(p1._color, p2._color, w1));
+        return new Paint(CombineColors(p1.color, p2.color, w1));
     }
     public static Color CombineColors(Color c1, Color c2, float w1 = .5f)
     {
@@ -28,29 +29,29 @@ public class Paint
     }
     public Paint(Color color, bool primary = false)
     {
-        this._color = color;
-        this._primary = primary;
+        this.color = color;
+        this.primary = primary;
     }
     public Material GetMaterial()
     {
-        if (_material == null)
+        if (material == null)
         {
-            _material = new Material(PaintingController.defaultShader);
-            _material.color = _color;
+            material = new Material(PaintingController.defaultShader);
+            material.color = color;
         }
-        return _material;
+        return material;
     }
     public Color GetColor()
     {
-        return _color;
+        return color;
     }
     public bool IsPrimary()
     {
-        return _primary;
+        return primary;
     }
     public void SetColor(Color newColor)
     {
-        _material = null;
-        _color = newColor;
+        material = null;
+        color = newColor;
     }
 }

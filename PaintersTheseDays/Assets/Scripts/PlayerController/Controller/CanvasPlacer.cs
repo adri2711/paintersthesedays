@@ -41,38 +41,67 @@ public class CanvasPlacer : MonoBehaviour
 
     private void Place()
     {
-        Quaternion rotation = Quaternion.Euler(15f, transform.rotation.eulerAngles.y, 0f);
+        Quaternion rotation;
+        rotation = Quaternion.Euler(15f, transform.rotation.eulerAngles.y, 0f);
         PaintingCanvas paintingCanvasObject = Instantiate(_paintingCanvasPrefab, transform.position, rotation).GetComponent<PaintingCanvas>();
 
-        float thickness = .5f;
-        Vector3 canvasHalfExtents = new Vector3(paintingCanvasObject.width / 2f, paintingCanvasObject.width * paintingCanvasObject.resolution / 2f, thickness / 2f);
-
-        Vector3 raycastPos;
-        RaycastHit hit;
-
-        if (Physics.BoxCast(transform.position, canvasHalfExtents, transform.forward, out hit, rotation, canvasPlacementDistance))
+        QuestPoint questPoint = null;
+        foreach (QuestPoint p in FindObjectsByType<QuestPoint>(FindObjectsSortMode.None))
         {
-            raycastPos = transform.position + transform.forward * (hit.distance - thickness);
+            if (p.questActive)
+            {
+                questPoint = p;
+            }
+        }
+
+        if (questPoint != null)
+        {
+            paintingCanvasObject.transform.position = questPoint.quest.position;
+            paintingCanvasObject.transform.rotation = Quaternion.Euler(15f, questPoint.quest.yRotation, 0f);
+
+            if (FirstPersonController.paintingSave != null)
+            {
+                paintingCanvasObject.LoadPainting(FirstPersonController.paintingSave);
+            }
+            else if (questPoint.quest.hasIncompletePainting)
+            {
+                paintingCanvasObject.LoadPainting(questPoint.quest.incompletePainting);
+            }
+            paintingCanvasObject.Generate(!questPoint.quest.hasIncompletePainting && FirstPersonController.paintingSave == null);
         }
         else
         {
-            raycastPos = transform.position + transform.forward * canvasPlacementDistance;
+            float thickness = .5f;
+            Vector3 canvasHalfExtents = new Vector3(paintingCanvasObject.width / 2f, paintingCanvasObject.width * paintingCanvasObject.resolution / 2f, thickness / 2f);
+
+            Vector3 raycastPos;
+            RaycastHit hit;
+
+            if (Physics.BoxCast(transform.position, canvasHalfExtents, transform.forward, out hit, rotation, canvasPlacementDistance))
+            {
+                raycastPos = transform.position + transform.forward * (hit.distance - thickness);
+            }
+            else
+            {
+                raycastPos = transform.position + transform.forward * canvasPlacementDistance;
+            }
+
+            if (Physics.BoxCast(raycastPos, canvasHalfExtents, transform.TransformDirection(Vector3.down), out hit, rotation, 15f))
+            {
+                paintingCanvasObject.transform.position = new Vector3(hit.point.x, hit.point.y + 1f, hit.point.z);
+            }
+
+            bool generate = FirstPersonController.paintingSave == null;
+            if (!generate)
+            {
+                paintingCanvasObject.LoadPainting(FirstPersonController.paintingSave);
+            }
+            paintingCanvasObject.Generate(generate);
         }
 
-        if (Physics.BoxCast(raycastPos, canvasHalfExtents, transform.TransformDirection(Vector3.down), out hit, rotation, 15f))
-        {
-            paintingCanvasObject.transform.position = new Vector3(hit.point.x, hit.point.y + 1f, hit.point.z);
-        }
-
-        bool generate = FirstPersonController.paintingSave == null;
-        if (!generate)
-        {
-            paintingCanvasObject.LoadPainting(FirstPersonController.paintingSave);
-        }
-        paintingCanvasObject.Generate(generate);
+        
         _firstPersonController.EnableCanvasMode(paintingCanvasObject);
     }
-
     private void Edit()
     {
         PaintingCanvas colliderCanvas = CheckIfClickingCanvas();

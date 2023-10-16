@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -13,6 +14,8 @@ public class PaintingController : MonoBehaviour
     List<Brush> _brushes = new List<Brush>();
     int _selectedBrush = 0;
     bool _canScroll = true;
+    Vector3 prevMousePosition = Vector3.zero;
+    float minActivationDistance = 50f;
 
     void Start()
     {
@@ -22,7 +25,7 @@ public class PaintingController : MonoBehaviour
         _camera = GetComponent<Camera>();
 
         _brushes.Add(new Brush(Color.cyan, 3, 4f));
-        _brushes.Add(new Brush(Color.yellow, 5, 4f));
+        _brushes.Add(new Brush(Color.yellow, 7, 4f));
         _brushes.Add(new Brush(Paint.CombineColors(Color.red, Color.blue, 0.7f), 3, 2f));
 
     }
@@ -62,6 +65,9 @@ public class PaintingController : MonoBehaviour
 
     private void PaintWithBrush(bool rightClick = false)
     {
+        if (Vector3.Distance(Input.mousePosition, prevMousePosition) < minActivationDistance / _firstPersonController.currentActiveCanvas.subdivisions) return;
+        prevMousePosition = Input.mousePosition;
+
         int iterations = rightClick ? 1 : _brushes[_selectedBrush].density;
         float sizeIncrease = rightClick ? 1f : _brushes[_selectedBrush].dispersion;
         HashSet<int> brushTris = new HashSet<int>();
@@ -78,14 +84,9 @@ public class PaintingController : MonoBehaviour
             }
         }
 
-        foreach (int t in brushTris)
-        {
-            if (t < 0) continue;
-            _firstPersonController.currentActiveCanvas.SetTriangleMaterial(t, _brushes[_selectedBrush].GetMaterial());
-        }
-
         if (brushTris.Count > 0)
         {
+            _firstPersonController.currentActiveCanvas.SetMaterialToTriangles(brushTris, _brushes[_selectedBrush].GetMaterial());
             _firstPersonController.currentActiveCanvas.ApplyMaterials();
         }
     }

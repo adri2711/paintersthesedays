@@ -36,7 +36,7 @@ public class PaletteObject : MonoBehaviour
         _brushObject = transform.parent.parent.GetComponentInChildren<BrushObject>();
         _model = transform.Find("PaletteModel").GetComponent<MeshRenderer>();
         _model.enabled = false;
-        SetPaints(new Color[] { Color.cyan, Color.yellow, Color.magenta, Color.black, Color.black }, true);
+        SetPaints(new Color[] { Color.cyan, Color.yellow, Color.magenta, Color.black, Color.white }, true);
 
         _characterSignals.EnteredCanvas.Subscribe(w =>
         {

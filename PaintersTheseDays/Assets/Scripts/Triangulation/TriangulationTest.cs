@@ -30,7 +30,6 @@ public class TriangulationTest : MonoBehaviour
         _vertices.Add(new Vertex(_vertices.Count, canvasLimit * new Vector2(1f, 0f)));
 
         _triangles = tr.Triangulate(_vertices);
-        tr.GenerateAdjacency();
 
         gameObject.AddComponent<MeshFilter>();
         gameObject.AddComponent<MeshRenderer>();
