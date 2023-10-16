@@ -26,7 +26,7 @@ public class QuestPoint : MonoBehaviour
     {
         if (player == null) player = FindObjectOfType<FirstPersonController>();
         particles = GetComponentInChildren<ParticleSystem>();
-        particles.Stop();
+        particles.transform.Find("LineParticles").GetComponent<ParticleSystem>().Stop();
         TakeReference();
         StartCoroutine(ProcessRef(quest.leniency));
 
@@ -66,7 +66,7 @@ public class QuestPoint : MonoBehaviour
         refCamera.targetTexture = null;
         RenderTexture.active = null;
         Destroy(rt);
-        GetComponentInChildren<SpriteRenderer>().sprite = Sprite.Create(refImage, new Rect(0f, 0f, refImage.width, refImage.height), new Vector2(0.5f, 0.5f), 10f);
+        //GetComponentInChildren<SpriteRenderer>().sprite = Sprite.Create(refImage, new Rect(0f, 0f, refImage.width, refImage.height), new Vector2(0.5f, 0.5f), 10f);
         refCamera.enabled = false;
     }
 
@@ -194,7 +194,8 @@ public class QuestPoint : MonoBehaviour
     private void DeactivatePoint()
     {
         questActive = false;
-        particles.Stop();
+        particles.Play();
+        particles.transform.Find("LineParticles").GetComponent<ParticleSystem>().Stop();
         ValidatePainting(FirstPersonController.paintingSave);
     }
     
