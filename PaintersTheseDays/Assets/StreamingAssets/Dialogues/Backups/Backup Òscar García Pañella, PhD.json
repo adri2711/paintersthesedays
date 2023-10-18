@@ -1,4 +1,6 @@
 {
+  "successfulSentence": "wow i love it so amazing",
+  "failedSentence": "this sucks",
   "dialogueContent": 
   [
     {
@@ -39,7 +41,8 @@
       [
         {
           "option": "Yes",
-          "optionNumber": "0"
+          "optionNumber": "0",
+          "questToGive": "demo1"
         },
         {
           "option": "No",

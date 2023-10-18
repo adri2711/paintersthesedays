@@ -40,6 +40,7 @@ namespace Managers
 
         private bool _currentSentenceFinished = true;
         private bool _finishSentence;
+        private bool _waitForQuest;
         private bool _choosingOption;
         private bool _lastSentence;
         
@@ -133,6 +134,8 @@ namespace Managers
                     arrow.gameObject.SetActive(false);
                 }
 
+                QuestManager.Instance.ActivateQuest(_dialogueContent.dialogueOptions[_optionSelected].questToGive);
+
                 _optionSelected = 0;
 
                 _lastSentence = false;
@@ -176,6 +179,8 @@ namespace Managers
 
             LoadSentences(_dialogueContent.sentences);
 
+            _waitForQuest = false;
+
             DisplayNextSentence();
         }
 
@@ -201,17 +206,39 @@ namespace Managers
 
         private void DisplayNextSentence()
         {
-            if (_sentences.Count == 0)
+            string sentence;
+            if (QuestManager.Instance.activeQuest != null)
             {
-                EndDialogue();
-                return;
+                if (_waitForQuest)
+                {
+                    EndDialogue();
+                    return;
+                }
+                if (QuestManager.Instance.activeQuest.valid)
+                {
+                    sentence = _dialogue.successfulSentence;
+                }
+                else
+                {
+                    sentence = _dialogue.failedSentence;
+                }
+                _waitForQuest = true;
             }
-
-            string sentence = _sentences.Dequeue();
-
-            if (_sentences.Count == 0)
+            else
             {
-                _lastSentence = true;
+
+                if (_sentences.Count == 0)
+                {
+                    EndDialogue();
+                    return;
+                }
+
+                sentence = _sentences.Dequeue();
+
+                if (_sentences.Count == 0)
+                {
+                    _lastSentence = true;
+                }
             }
 
             StartCoroutine(TypeSentence(sentence, 0.03f));
