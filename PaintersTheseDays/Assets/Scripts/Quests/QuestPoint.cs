@@ -26,7 +26,7 @@ public class QuestPoint : MonoBehaviour
     {
         if (player == null) player = FindObjectOfType<FirstPersonController>();
         particles = GetComponentInChildren<ParticleSystem>();
-        particles.Stop();
+        particles.transform.Find("LineParticles").GetComponent<ParticleSystem>().Stop();
         TakeReference();
         StartCoroutine(ProcessRef(quest.leniency));
 
@@ -66,7 +66,7 @@ public class QuestPoint : MonoBehaviour
         refCamera.targetTexture = null;
         RenderTexture.active = null;
         Destroy(rt);
-        GetComponentInChildren<SpriteRenderer>().sprite = Sprite.Create(refImage, new Rect(0f, 0f, refImage.width, refImage.height), new Vector2(0.5f, 0.5f), 10f);
+        //GetComponentInChildren<SpriteRenderer>().sprite = Sprite.Create(refImage, new Rect(0f, 0f, refImage.width, refImage.height), new Vector2(0.5f, 0.5f), 10f);
         refCamera.enabled = false;
     }
 
@@ -83,24 +83,13 @@ public class QuestPoint : MonoBehaviour
         Debug.Log("Ref: " + refColors.Count + ", Painting: " + paintingColors.Count);
         Debug.Log("Strokes: " + paintingData.strokeCount);
 
-        bool bad = true;
-
         Vector3 pg = CalculatePaintingGradient(paintingData, quest.leniency);
-        float scale = (refImage.height * refImage.width) / paintingData.materials.Length;
+        float scale = (refImage.height * refImage.width) / paintingData.materials.Length / 4f;
         float gDiff = Mathf.Abs(((gradient.x + gradient.y + gradient.z) / 3f) * scale - ((pg.x + pg.y + pg.z) / 3f));
         Debug.Log("Painting Gradient: " + pg + ", Ref Gradient: " + gradient * scale + ", Diff: " + gDiff);
-        if (paintingColors.Count > 1 && paintingData.strokeCount > 800 && gDiff < 0.075f)
+        if (paintingColors.Count > 1 && paintingData.strokeCount > 800 && gDiff < 0.1f)
         {
-            bad = false;
-        }
-
-        if (bad)
-        {
-            Debug.Log("bad");
-        }
-        else
-        {
-            Debug.Log("good");
+            quest.valid = true;
         }
     }
 
@@ -194,7 +183,8 @@ public class QuestPoint : MonoBehaviour
     private void DeactivatePoint()
     {
         questActive = false;
-        particles.Stop();
+        particles.Play();
+        particles.transform.Find("LineParticles").GetComponent<ParticleSystem>().Stop();
         ValidatePainting(FirstPersonController.paintingSave);
     }
     

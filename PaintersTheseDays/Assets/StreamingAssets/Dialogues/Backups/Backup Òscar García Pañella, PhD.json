@@ -1,61 +1,52 @@
 {
+  "successfulSentence": "You're quite gifted! My friend up that hill probably knows some scenic spots you could paint as well!",
+  "failedSentence": "All art is subjective, but you could put a bit more time into this one.",
   "dialogueContent": 
   [
     {
       "chosenOptionsSequenceNeeded": "",
       "sentences": 
         [
-          "IA class", 
-          "Dies from cringe",
-          "Your eyes are better",
-          "Dies from cringe again",
-          "Chamfer"
+          "Isn't spirit island nice? I barely miss mortal life nowadays.", 
+          "Oh, you're here to paint?",
+          "You can place your easel behind me, between those benches.",
+          "It's a nice angle, give it a try! And don't forget to show me the result."
         ],
       "sentencesPosOptions": 
       [
         {
           "sentences":
           [
-            "Ty"
+            "Look for the shiny spot and press E to place your easel."
           ],
           "selectedOptionNumber": "0"
         }, 
         {
           "sentences":
           [
-            "Fuck u"
+            "Feel free to take your time."
           ],
           "selectedOptionNumber": "1"
-        },
-        {
-          "sentences":
-          [
-            "I love your soul"
-          ],
-          "selectedOptionNumber": "2"
         }
       ],
       "dialogueOptions": 
       [
         {
-          "option": "Yes",
-          "optionNumber": "0"
+          "option": "Sure!",
+          "optionNumber": "0",
+          "questToGive": "demo0"
         },
         {
-          "option": "No",
+          "option": "Maybe later.",
           "optionNumber": "1"
-        },
-        {
-          "option": "Fuck Yeah",
-          "optionNumber": "2"
         }
       ]
     }, 
     {
-      "chosenOptionsSequenceNeeded": "0",
+      "chosenOptionsSequenceNeeded": "1",
       "sentences": 
       [
-        "Fuck it"
+        "Nice weather to paint don't you think?"
       ],
       "dialogueOptions": 
       [

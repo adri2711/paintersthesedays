@@ -45,7 +45,7 @@ namespace Canvas
             
             _dialogueManager.GetCanvas().gameObject.SetActive(true);
             
-            _dialogueManager.StartDialogue(_dialogue, _speakerName);
+            _dialogueManager.StartDialogue(this, _dialogue, _speakerName);
         }
 
         private void OnTriggerExit(Collider collider)

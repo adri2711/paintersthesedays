@@ -9,6 +9,7 @@ using Directory = System.IO.Directory;
 using File = System.IO.File;
 using Image = UnityEngine.UI.Image;
 using Input = UnityEngine.Input;
+using Canvas;
 
 namespace Managers
 {
@@ -34,6 +35,8 @@ namespace Managers
 
         private DialogueContent _dialogueContent;
 
+        private DialogueTrigger _currentTrigger;
+
         private string _speakerName;
 
         private int _optionSelected;
@@ -42,7 +45,8 @@ namespace Managers
         private bool _finishSentence;
         private bool _choosingOption;
         private bool _lastSentence;
-        
+        private bool _waitForQuest = false;
+        private bool _questSentence = false;
 
         private void Awake()
         {
@@ -133,6 +137,8 @@ namespace Managers
                     arrow.gameObject.SetActive(false);
                 }
 
+                QuestManager.Instance.ActivateQuest(_dialogueContent.dialogueOptions[_optionSelected].questToGive);
+
                 _optionSelected = 0;
 
                 _lastSentence = false;
@@ -162,8 +168,10 @@ namespace Managers
             _arrows[_optionSelected].gameObject.SetActive(true);
         }
 
-        public void StartDialogue(Dialogue dialogue, string speakerName)
+        public void StartDialogue(DialogueTrigger trigger, Dialogue dialogue, string speakerName)
         {
+            _currentTrigger = trigger;
+
             _dialogue = dialogue;
 
             _speakerName = speakerName;
@@ -175,6 +183,12 @@ namespace Managers
             _sentences.Clear();
 
             LoadSentences(_dialogueContent.sentences);
+
+            if (QuestManager.Instance.activeQuest != null)
+            {
+                _waitForQuest = true;
+                _questSentence = true;
+            }
 
             DisplayNextSentence();
         }
@@ -201,17 +215,47 @@ namespace Managers
 
         private void DisplayNextSentence()
         {
-            if (_sentences.Count == 0)
+            string sentence;
+            if (_waitForQuest)
             {
-                EndDialogue();
-                return;
+                if (!_questSentence)
+                {
+                    EndDialogue();
+                    return;
+                }
+                if (QuestManager.Instance.activeQuest.valid)
+                {
+                    sentence = _dialogue.successfulSentence;
+                    _waitForQuest = false;
+                    QuestEvent e = _currentTrigger.GetComponent<QuestEvent>();
+                    if (e != null)
+                    {
+                        e.Activate();
+                    }
+                    QuestManager.Instance.FinishQuest();
+                    _sentences.Clear();
+                }
+                else
+                {
+                    sentence = _dialogue.failedSentence;
+                }
+                _questSentence = false;
             }
-
-            string sentence = _sentences.Dequeue();
-
-            if (_sentences.Count == 0)
+            else
             {
-                _lastSentence = true;
+
+                if (_sentences.Count == 0)
+                {
+                    EndDialogue();
+                    return;
+                }
+
+                sentence = _sentences.Dequeue();
+
+                if (_sentences.Count == 0)
+                {
+                    _lastSentence = true;
+                }
             }
 
             StartCoroutine(TypeSentence(sentence, 0.03f));

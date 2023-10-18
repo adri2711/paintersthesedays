@@ -5,5 +5,6 @@ namespace NoMonoBehaviourClasses
     {
         public string option;
         public string optionNumber;
+        public string questToGive;
     }
 }
