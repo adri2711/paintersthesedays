@@ -9,6 +9,7 @@ using Directory = System.IO.Directory;
 using File = System.IO.File;
 using Image = UnityEngine.UI.Image;
 using Input = UnityEngine.Input;
+using Canvas;
 
 namespace Managers
 {
@@ -34,16 +35,18 @@ namespace Managers
 
         private DialogueContent _dialogueContent;
 
+        private DialogueTrigger _currentTrigger;
+
         private string _speakerName;
 
         private int _optionSelected;
 
         private bool _currentSentenceFinished = true;
         private bool _finishSentence;
-        private bool _waitForQuest;
         private bool _choosingOption;
         private bool _lastSentence;
-        
+        private bool _waitForQuest = false;
+        private bool _questSentence = false;
 
         private void Awake()
         {
@@ -165,8 +168,10 @@ namespace Managers
             _arrows[_optionSelected].gameObject.SetActive(true);
         }
 
-        public void StartDialogue(Dialogue dialogue, string speakerName)
+        public void StartDialogue(DialogueTrigger trigger, Dialogue dialogue, string speakerName)
         {
+            _currentTrigger = trigger;
+
             _dialogue = dialogue;
 
             _speakerName = speakerName;
@@ -179,7 +184,11 @@ namespace Managers
 
             LoadSentences(_dialogueContent.sentences);
 
-            _waitForQuest = false;
+            if (QuestManager.Instance.activeQuest != null)
+            {
+                _waitForQuest = true;
+                _questSentence = true;
+            }
 
             DisplayNextSentence();
         }
@@ -207,9 +216,9 @@ namespace Managers
         private void DisplayNextSentence()
         {
             string sentence;
-            if (QuestManager.Instance.activeQuest != null)
+            if (_waitForQuest)
             {
-                if (_waitForQuest)
+                if (!_questSentence)
                 {
                     EndDialogue();
                     return;
@@ -217,12 +226,20 @@ namespace Managers
                 if (QuestManager.Instance.activeQuest.valid)
                 {
                     sentence = _dialogue.successfulSentence;
+                    _waitForQuest = false;
+                    QuestEvent e = _currentTrigger.GetComponent<QuestEvent>();
+                    if (e != null)
+                    {
+                        e.Activate();
+                    }
+                    QuestManager.Instance.FinishQuest();
+                    _sentences.Clear();
                 }
                 else
                 {
                     sentence = _dialogue.failedSentence;
                 }
-                _waitForQuest = true;
+                _questSentence = false;
             }
             else
             {

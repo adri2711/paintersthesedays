@@ -1,0 +1,73 @@
+{
+  "successfulSentence": "wow i love it so amazing",
+  "failedSentence": "this sucks",
+  "dialogueContent": 
+  [
+    {
+      "chosenOptionsSequenceNeeded": "",
+      "sentences": 
+        [
+          "Isn't spirit island nice?", 
+          "I barely miss my mortal life anymore.",
+          "",
+          "Dies from cringe again",
+          "Chamfer"
+        ],
+      "sentencesPosOptions": 
+      [
+        {
+          "sentences":
+          [
+            "Ty"
+          ],
+          "selectedOptionNumber": "0"
+        }, 
+        {
+          "sentences":
+          [
+            "Fuck u"
+          ],
+          "selectedOptionNumber": "1"
+        },
+        {
+          "sentences":
+          [
+            "I love your soul"
+          ],
+          "selectedOptionNumber": "2"
+        }
+      ],
+      "dialogueOptions": 
+      [
+        {
+          "option": "Yes",
+          "optionNumber": "0",
+          "questToGive": "demo1"
+        },
+        {
+          "option": "No",
+          "optionNumber": "1"
+        },
+        {
+          "option": "Fuck Yeah",
+          "optionNumber": "2"
+        }
+      ]
+    }, 
+    {
+      "chosenOptionsSequenceNeeded": "0",
+      "sentences": 
+      [
+        "Fuck it"
+      ],
+      "dialogueOptions": 
+      [
+        {
+          "option": "Òscar García Pañella, PhD.",
+          "optionNumber": "0"
+        }
+      ]
+    }
+  ],
+  "chosenOptions": ""
+}
