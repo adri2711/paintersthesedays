@@ -1,1 +1,61 @@
-{"dialogueContent":[{"chosenOptionsSequenceNeeded":"","sentences":["Isn't spirit island nice? I barely miss mortal life nowadays.","Oh, you're here to paint?","You can place your easel behind me, between those benches.","It's a nice angle, give it a try! And don't forget to show me the result."],"sentencesPosOptions":[{"sentences":["Look for the shiny spot and press E to place your easel."],"selectedOptionNumber":"0"},{"sentences":["Feel free to take your time."],"selectedOptionNumber":"1"}],"dialogueOptions":[{"option":"Sure!","optionNumber":"0","questToGive":"demo0"},{"option":"Maybe later.","optionNumber":"1","questToGive":""}]},{"chosenOptionsSequenceNeeded":"1","sentences":["Nice weather to paint don't you think?"],"sentencesPosOptions":[],"dialogueOptions":[{"option":"Òscar García Pañella, PhD.","optionNumber":"0","questToGive":""}]}],"successfulSentence":"You're quite gifted! My friend up that hill probably knows some scenic spots you could paint as well!","failedSentence":"All art is subjective, but you could put a bit more time into this one.","chosenOptions":""}
+{
+  "successfulSentence": "You're quite gifted! My friend up that hill probably knows some scenic spots you could paint as well!",
+  "failedSentence": "All art is subjective, but you could put a bit more time into this one.",
+  "dialogueContent": 
+  [
+    {
+      "chosenOptionsSequenceNeeded": "",
+      "sentences": 
+        [
+          "Isn't spirit island nice? I barely miss mortal life nowadays.", 
+          "Oh, you're here to paint?",
+          "You can place your easel behind me, between those benches.",
+          "Try painting the fountain and a bit of the hills. Don't forget to show me the result!"
+        ],
+      "sentencesPosOptions": 
+      [
+        {
+          "sentences":
+          [
+            "Look for the shiny spot and press E to place your easel."
+          ],
+          "selectedOptionNumber": "0"
+        }, 
+        {
+          "sentences":
+          [
+            "Feel free to take your time."
+          ],
+          "selectedOptionNumber": "1"
+        }
+      ],
+      "dialogueOptions": 
+      [
+        {
+          "option": "Sure!",
+          "optionNumber": "0",
+          "questToGive": "demo0"
+        },
+        {
+          "option": "Maybe later.",
+          "optionNumber": "1"
+        }
+      ]
+    }, 
+    {
+      "chosenOptionsSequenceNeeded": "1",
+      "sentences": 
+      [
+        "Nice weather to paint don't you think?"
+      ],
+      "dialogueOptions": 
+      [
+        {
+          "option": "Òscar García Pañella, PhD.",
+          "optionNumber": "0"
+        }
+      ]
+    }
+  ],
+  "chosenOptions": ""
+}

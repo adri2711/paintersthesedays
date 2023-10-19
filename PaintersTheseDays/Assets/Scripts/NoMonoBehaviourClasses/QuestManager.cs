@@ -42,6 +42,7 @@ public class QuestManager : MonoBehaviour
 
     private void SpawnSpotQuest(SpotQuest quest)
     {
+        if (quest == null) return;
         Object q = Resources.Load<Object>("Prefab/QuestPoint");
         QuestPoint qp = Instantiate(q, quest.position, Quaternion.Euler(0f, quest.yRotation, 0f)).GetComponent<QuestPoint>();
         qp.SetQuest(quest);
