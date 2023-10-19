@@ -38,6 +38,7 @@ public class QuestManager : MonoBehaviour
     public void FinishQuest()
     {
         activeQuest = null;
+        FirstPersonController.paintingSave = null;
     }
 
     private void SpawnSpotQuest(SpotQuest quest)

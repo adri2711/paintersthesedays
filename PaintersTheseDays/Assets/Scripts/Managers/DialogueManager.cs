@@ -184,6 +184,8 @@ namespace Managers
 
             LoadSentences(_dialogueContent.sentences);
 
+            _lastSentence = false;
+
             if (QuestManager.Instance.activeQuest != null)
             {
                 _waitForQuest = true;
