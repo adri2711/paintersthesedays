@@ -88,7 +88,7 @@ public class QuestPoint : MonoBehaviour
         float scale = (refImage.height * refImage.width) / paintingData.materials.Length / 4f;
         float gDiff = Mathf.Abs(((gradient.x + gradient.y + gradient.z) / 3f) * scale - ((pg.x + pg.y + pg.z) / 3f));
         Debug.Log("Painting Gradient: " + pg + ", Ref Gradient: " + gradient * scale + ", Diff: " + gDiff);
-        if (paintingColors.Count > 1 && paintingData.strokeCount > 1)
+        if (paintingColors.Count > 1 && paintingData.strokeCount > 500)
         {
             quest.valid = true;
         }
