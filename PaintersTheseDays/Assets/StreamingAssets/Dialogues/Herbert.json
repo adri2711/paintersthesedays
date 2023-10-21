@@ -1,1 +1,59 @@
-{"dialogueContent":[{"chosenOptionsSequenceNeeded":"","sentences":["I have some work for you.","I marked a spot, go find it and paint it."],"sentencesPosOptions":[{"sentences":["Since you look a bit slow, here's a hint: go on top of the taller hill and you'll see it."],"selectedOptionNumber":"0"},{"sentences":["If you don't listen to me, not a soul in spirit island will hire you."],"selectedOptionNumber":"1"}],"dialogueOptions":[{"option":"I'll try my best.","optionNumber":"0","questToGive":"demo1"},{"option":"Get Lost.","optionNumber":"1","questToGive":""}]},{"chosenOptionsSequenceNeeded":"0","sentences":["I'm such a good leader."],"sentencesPosOptions":[],"dialogueOptions":[{"option":"Herbert","optionNumber":"0","questToGive":""}]}],"successfulSentence":"Not bad. I sense that something changed in spirit island, have a look around.","failedSentence":"This sucks.","chosenOptions":"1"}
+{
+  "successfulSentence": "Not bad. I sense that something changed in spirit island, have a look around.",
+  "failedSentence": "This sucks.",
+  "dialogueContent": 
+  [
+    {
+      "chosenOptionsSequenceNeeded": "",
+      "sentences": 
+        [
+          "I have some work for you.",
+          "I marked a spot, go find it and paint it."
+        ],
+      "sentencesPosOptions": 
+      [
+        {
+          "sentences":
+          [
+            "Since you look a bit slow, here's a hint: go on top of the taller hill and you'll see it."
+          ],
+          "selectedOptionNumber": "0"
+        }, 
+        {
+          "sentences":
+          [
+            "If you don't listen to me, not a soul in spirit island will hire you."
+          ],
+          "selectedOptionNumber": "1"
+        }
+      ],
+      "dialogueOptions": 
+      [
+        {
+          "option": "I'll try my best.",
+          "optionNumber": "0",
+          "questToGive": "demo1"
+        },
+        {
+          "option": "Get Lost.",
+          "optionNumber": "1"
+        }
+      ]
+    }, 
+    {
+      "chosenOptionsSequenceNeeded": "0",
+      "sentences": 
+      [
+        "I'm such a good leader."
+      ],
+      "dialogueOptions": 
+      [
+        {
+          "option": "Herbert",
+          "optionNumber": "0"
+        }
+      ]
+    }
+  ],
+  "chosenOptions": ""
+}

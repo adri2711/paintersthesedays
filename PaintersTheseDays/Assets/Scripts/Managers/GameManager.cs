@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Managers
@@ -5,6 +6,10 @@ namespace Managers
     public class GameManager : MonoBehaviour
     {
         private static GameManager _instance;
+
+        [SerializeField] private FirstPersonController _firstPersonController;
+
+        [SerializeField] private GameObject _crosshairCanvas;
 
         private void Awake()
         {
@@ -21,5 +26,11 @@ namespace Managers
         }
 
         public static GameManager Instance => _instance;
+
+
+        private void Update()
+        {
+            _crosshairCanvas.SetActive(_firstPersonController.canMove);
+        }
     }
 }
