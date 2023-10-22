@@ -73,17 +73,11 @@ public class PaintingCanvas : MonoBehaviour
             if (i < 0) continue;
             float a = materials[i].color.a;
             materials[i] = material;
-            materials[i].color = material.color.WithAlpha(a);
+            Color c = material.color;
+            c.a = a;
+            materials[i].color = c;
         }
         meshRenderer.materials = materials;
-        strokeCount++;
-    }
-
-    public void SetTriangleMaterial(int id, Material material)
-    {
-        float a = materials[id].color.a;
-        materials[id] = material;
-        materials[id].color = material.color.WithAlpha(a);
         strokeCount++;
     }
 
