@@ -1,0 +1,64 @@
+{
+  "successfulSentence": "Nicely done! Looks like the spirits were pleased with your work and a path opened up up ahead!",
+  "failedSentence": "I suggest you give that painting some more love. Bring it back once you're done.",
+  "waitingSentence": "Place your canvas in the spot I marked, and once you're done painting, bring it back to me.",
+  "dialogueContent": 
+  [
+    {
+      "chosenOptionsSequenceNeeded": "",
+      "sentences": 
+        [
+          "Painting is easy!",
+          "You have your easel with you, right?"
+        ],
+      "sentencesPosOptions": 
+      [
+        {
+          "sentences":
+          [
+            "Awesome, why don't you set up here and paint that rock and that nice ol' tree over there.",
+            "See that glow? Get near it and press E to place your easel and start painting."
+          ],
+          "selectedOptionNumber": "0"
+        }, 
+        {
+          "sentences":
+          [
+            "The wooden thing you support paintings on. You really need to study your vocab.",
+            "Anyway, why don't you set up here and paint that rock and that nice ol' tree over there.",
+            "See that glow? Get near it and press E to place your easel and start painting."
+          ],
+          "selectedOptionNumber": "1"
+        }
+      ],
+      "dialogueOptions": 
+      [
+        {
+          "option": "Yes",
+          "optionNumber": "0",
+          "questToGive": "demotutorial"
+        },
+        {
+          "option": "What even is that?",
+          "optionNumber": "1",
+          "questToGive": "demotutorial"
+        }
+      ]
+    }, 
+    {
+      "chosenOptionsSequenceNeeded": "0",
+      "sentences": 
+      [
+        "Looks like there's some space for you to explore!"
+      ],
+      "dialogueOptions": 
+      [
+        {
+          "option": "George",
+          "optionNumber": "0"
+        }
+      ]
+    }
+  ],
+  "chosenOptions": ""
+}

@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RocksQuestEvent : QuestEvent
+public class StartUnlockEvent : QuestEvent
 {
     public override void Activate()
     {
-        GameObject.Find("ByeRocks").gameObject.SetActive(false);
+        GameObject.Find("StartExit").gameObject.SetActive(false);
     }
 }

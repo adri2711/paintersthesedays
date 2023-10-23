@@ -31,12 +31,12 @@
       "dialogueOptions": 
       [
         {
-          "option": "I'll try my best.",
+          "option": "I'll give it a try.",
           "optionNumber": "0",
-          "questToGive": "demo1"
+          "questToGive": "demotut"
         },
         {
-          "option": "Get Lost.",
+          "option": "I need a moment.",
           "optionNumber": "1"
         }
       ]
@@ -50,7 +50,7 @@
       "dialogueOptions": 
       [
         {
-          "option": "Herbert",
+          "option": "Edward",
           "optionNumber": "0"
         }
       ]

@@ -19,13 +19,14 @@ namespace Managers
         private const string DIALOGUE_JSON_FILE = "/Dialogues/";
 
         [SerializeField] private UnityEngine.Canvas _canvas;
-        
         [SerializeField] private TextMeshProUGUI[] _dialogueOptions;
         [SerializeField] private Image[] _arrows;
         
         [SerializeField] private TextMeshProUGUI _nameText;
         [SerializeField] private TextMeshProUGUI _dialogueText;
-        
+
+        private FirstPersonController _player;
+
         private Queue<string> _sentences;
         
         private Queue<DialogueOption> _options;
@@ -83,6 +84,7 @@ namespace Managers
         {
             _sentences = new Queue<string>();
             _options = new Queue<DialogueOption>();
+            _player = GameObject.Find("Player").GetComponent<FirstPersonController>();
         }
 
         private void Update()
@@ -224,7 +226,11 @@ namespace Managers
                     EndDialogue();
                     return;
                 }
-                if (QuestManager.Instance.activeQuest.valid)
+                if (!_player.canPlaceCanvas || FirstPersonController.paintingSave == null)
+                {
+                    sentence = _dialogue.waitingSentence;
+                }
+                else if (QuestManager.Instance.activeQuest.valid)
                 {
                     sentence = _dialogue.successfulSentence;
                     _waitForQuest = false;

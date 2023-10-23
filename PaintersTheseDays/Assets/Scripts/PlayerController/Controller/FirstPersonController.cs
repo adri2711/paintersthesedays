@@ -309,11 +309,15 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
                 // jump while grounded
                 if (canMove && _jumpPressed && _jumpT == 0 && _jumpCoyoteT > 0)
                 {
-                    verticalVelocity = jumpForceMagnitude;
-                    _jumped.OnNext(Unit.Default);
-                    _jumpPressed = false;
-                    _jumpT = jumpCooldown;
-                    _jumpsRemaining--;
+                    RaycastHit hit;
+                    if (Physics.SphereCast(transform.position, 0.6f, Vector3.down, out hit, 10f) && hit.normal.y > 0.8f)
+                    {
+                        verticalVelocity = jumpForceMagnitude;
+                        _jumped.OnNext(Unit.Default);
+                        _jumpPressed = false;
+                        _jumpT = jumpCooldown;
+                        _jumpsRemaining--;
+                    }
                 }
                 //mid-air jump following jump
                 else if (i.Jump && _jumpT == 0 && _jumpsRemaining > 0 && _jumpsRemaining < jumps)

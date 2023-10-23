@@ -1,6 +1,7 @@
 {
-  "successfulSentence": "You're quite gifted! My friend up that hill probably knows some scenic spots you could paint as well!",
+  "successfulSentence": "That's a beautiful painting! My friend up that hill probably knows some scenic spots you could paint as well, you should pay him a visit.",
   "failedSentence": "All art is subjective, but you could put a bit more time into this one.",
+  "waitingSentence": "Try painting the fountain and a bit of the hills. Once you're done, bring me the canvas!",
   "dialogueContent": 
   [
     {
