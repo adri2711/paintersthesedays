@@ -21,7 +21,7 @@ public class PaletteObject : MonoBehaviour
     private PaintChunk _mixerPaintChunk;
     private PaletteGlass _glass;
     private bool _canClick = true;
-    private bool _erase = false;
+    public static bool erase = false;
     private bool _active = false;
 
     void Start()
@@ -94,11 +94,11 @@ public class PaletteObject : MonoBehaviour
             }
             else
             {
-                if (_erase) 
+                if (erase) 
                 {
+                    erase = false;
                     if (!paintChunk.paint.IsPrimary())
                     {
-                        _erase = false;
                         _paints.Remove(paintChunk.paint);
                         GeneratePaintChunks();
                     }
@@ -112,7 +112,7 @@ public class PaletteObject : MonoBehaviour
         }
         else if (paletteGlass != null)
         {
-            _erase = true;
+            erase = true;
         }
         else return;
         StartCoroutine(ClickDelay(0.2f));
@@ -159,7 +159,7 @@ public class PaletteObject : MonoBehaviour
     {
         _active = true;
         _model.enabled = true;
-        _erase = false;
+        erase = false;
         _model.GetComponent<Animator>().Play("Show");
         if (_paintChunks.Count == 0) GeneratePaintChunks();
     }
