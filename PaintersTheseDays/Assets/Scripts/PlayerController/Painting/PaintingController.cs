@@ -24,10 +24,7 @@ public class PaintingController : MonoBehaviour
         _firstPersonController = _characterSignalsInterfaceTarget.GetComponent<FirstPersonController>();
         _camera = GetComponent<Camera>();
 
-        _brushes.Add(new Brush(Color.cyan, 3, 4f));
-        _brushes.Add(new Brush(Color.yellow, 7, 4f));
-        _brushes.Add(new Brush(Paint.CombineColors(Color.red, Color.blue, 0.7f), 3, 2f));
-
+        _brushes.Add(new Brush());
     }
 
     void Update()
@@ -84,7 +81,7 @@ public class PaintingController : MonoBehaviour
             }
         }
 
-        if (brushTris.Count > 0)
+        if (brushTris.Count > 0 && _brushes[_selectedBrush].paint != null)
         {
             _firstPersonController.currentActiveCanvas.SetMaterialToTriangles(brushTris, _brushes[_selectedBrush].GetMaterial());
             _firstPersonController.currentActiveCanvas.ApplyMaterials();
