@@ -9,7 +9,6 @@ using Directory = System.IO.Directory;
 using File = System.IO.File;
 using Image = UnityEngine.UI.Image;
 using Input = UnityEngine.Input;
-using Canvas;
 
 namespace Managers
 {
