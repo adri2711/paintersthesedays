@@ -11,6 +11,7 @@ public class DialogueTrigger : MonoBehaviour
     [SerializeField] private string _speakerName;
     public bool active = false;
     public bool finished = false;
+    private bool ranEvent = false;
 
     private DialogueManager _dialogueManager;
 
@@ -71,6 +72,12 @@ public class DialogueTrigger : MonoBehaviour
             if (QuestManager.Instance.questPoint == null)
             {
                 active = false;
+            }
+            else if (!ranEvent)
+            {
+                ranEvent = true;
+                QuestStartEvent e = GetComponent<QuestStartEvent>();
+                if (e != null) e.Activate();
             }
         }
 

@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 2
   resolution: 0.8
-  subdivisions: 13
+  subdivisions: 17
   vertexVariation: 0.6
 --- !u!1001 &5455853117104651035
 PrefabInstance:

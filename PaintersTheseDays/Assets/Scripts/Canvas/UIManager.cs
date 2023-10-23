@@ -43,7 +43,7 @@ public class UIManager : MonoBehaviour
         _paintingCursorErase = _paintingCursor.transform.Find("erase").gameObject;
         _paintingCursorEraseMode = _paintingCursor.transform.Find("erasemode").gameObject;
 
-        ShowMoving();
+        HideMoving();
         HidePainting();
         HideRemoveEdit();
 
@@ -86,6 +86,10 @@ public class UIManager : MonoBehaviour
         {
             UpdatePaintingCursor(Input.mousePosition);
         }
+    }
+    public void ShowControls()
+    {
+        ShowMoving();
     }
     private void UpdatePaintingCursor(Vector2 pos)
     {
