@@ -169,7 +169,6 @@ public class PaletteObject : MonoBehaviour
         _model.GetComponent<Animator>().Play("Show");
         if (QuestManager.Instance.activeQuest != null)
         {
-            if (_questPalette) return;
             _questPalette = true;
             _paints = QuestManager.Instance.activeQuest.paints.ToList();
         }

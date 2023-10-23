@@ -1,29 +1,30 @@
 {
-  "successfulSentence": "Not bad. I sense that something changed in spirit island, have a look around.",
-  "failedSentence": "This sucks.",
-  "waitingSentence": "What are you waiting for? You can see the point from that tall hill.",
+  "successfulSentence": "Such expressiveness! Unparalelled creativity! I'm glad I got to share this moment with you.",
+  "failedSentence": "Come on, I'm sure you can do better than that.",
+  "waitingSentence": "Show me how you see this landscape.",
   "dialogueContent": 
   [
     {
       "chosenOptionsSequenceNeeded": "",
       "sentences": 
         [
-          "I have some work for you.",
-          "I marked a spot, go find it and paint it."
+          "Oh, hi there! It's been a while since I last met anyone new here.",
+          "Let's get to know each other!",
+          "What do you like the most, crispy cold or toasty warmth?"
         ],
       "sentencesPosOptions": 
       [
         {
           "sentences":
           [
-            "Since you look a bit slow, here's a hint: go on top of the taller hill and you'll see it."
+            "Interesting! Since you're such a cool artist, why don't you paint a nice and chilly portrait of this landscape?"
           ],
           "selectedOptionNumber": "0"
         }, 
         {
           "sentences":
           [
-            "If you don't listen to me, not a soul in spirit island will hire you."
+            "Interesting! Since you're a smoking hot artist, why don't you paint a nice and warm portrait of this landscape?"
           ],
           "selectedOptionNumber": "1"
         }
@@ -31,13 +32,14 @@
       "dialogueOptions": 
       [
         {
-          "option": "I'll give it a try.",
+          "option": "Cold!",
           "optionNumber": "0",
-          "questToGive": "demotut"
+          "questToGive": "democold"
         },
         {
-          "option": "I need a moment.",
-          "optionNumber": "1"
+          "option": "Warmth!",
+          "optionNumber": "1",
+          "questToGive": "demowarm"
         }
       ]
     }, 
@@ -45,7 +47,7 @@
       "chosenOptionsSequenceNeeded": "0",
       "sentences": 
       [
-        "I'm such a good leader."
+        "Today was great!"
       ],
       "dialogueOptions": 
       [
