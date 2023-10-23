@@ -294,6 +294,7 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
                 {
                     AdjustCameraToCanvas(adjustToCanvasDuration / 2f);
                 }
+                SoundManager.Instance.MuteFootstepSounds();
                 _stop.OnNext(Unit.Default);
             }).AddTo(this);
 
@@ -302,6 +303,13 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
             .Where(moveInputData => _jumpPressed || moveInputData.Move != Vector2.zero || _characterController.isGrounded == false)
             .Subscribe(i =>
             {
+                if (_characterController.isGrounded && canMove)
+                {
+                    if (Mathf.Abs(_characterController.velocity.x) > 0.1f || Mathf.Abs(_characterController.velocity.z) > 0.1f)
+                    {
+                        SoundManager.Instance.ResumeFootstepSounds();
+                    }
+                }
                 //// Vertical Movement ////
                 bool wasGrounded = _characterController.isGrounded;
                 float verticalVelocity = 0f;
@@ -317,6 +325,7 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
                         _jumpPressed = false;
                         _jumpT = jumpCooldown;
                         _jumpsRemaining--;
+                        SoundManager.Instance.MuteFootstepSounds();
                     }
                 }
                 //mid-air jump following jump
@@ -403,6 +412,14 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         _moved.OnNext(_characterController.velocity * Time.deltaTime);
         if (!wasGrounded && isGrounded)
         {
+            if (_characterController.velocity.x == 0f && _characterController.velocity.z == 0f)
+            {
+                SoundManager.Instance.MuteFootstepSounds();
+            }
+            else
+            {
+                SoundManager.Instance.ResumeFootstepSounds();
+            }
             _landed.OnNext(Unit.Default);
         }
     }

@@ -101,6 +101,7 @@ public class CanvasPlacer : MonoBehaviour
 
         
         _firstPersonController.EnableCanvasMode(paintingCanvasObject);
+        SoundManager.Instance.PlaceCanvasSound();
     }
     private void Edit()
     {
@@ -127,6 +128,7 @@ public class CanvasPlacer : MonoBehaviour
                 _firstPersonController.DisableCanvasMode();
                 _firstPersonController.canPlaceCanvas = true;
             }
+            SoundManager.Instance.RemoveSound();
         }
     }
 

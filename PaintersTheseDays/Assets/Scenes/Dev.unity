@@ -18942,6 +18942,60 @@ Transform:
   m_Father: {fileID: 1494605404}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &758511501
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 758511504}
+  - component: {fileID: 758511503}
+  m_Layer: 0
+  m_Name: SoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &758511503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 758511501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42af054631fc1db47a75b570700378de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectPaintSound: {fileID: 8300000, guid: 290de1dc835445847902911435118159, type: 3}
+  mixPaintSound: {fileID: 8300000, guid: e2ab3697e755bb24ebcd92f75eb3eff9, type: 3}
+  brushHitSound: {fileID: 8300000, guid: 8a131039be834d74c8fe8b59b789aaf5, type: 3}
+  placeCanvasSound: {fileID: 8300000, guid: b8b7dd90a9d0d5f4285bca642ecf4ed7, type: 3}
+  waterSound: {fileID: 8300000, guid: 0ca808c2336a3df47a3bc6d968fcf3c7, type: 3}
+  waterSplashSound: {fileID: 8300000, guid: a81794a68ea9cfd47a87891bca9903db, type: 3}
+  removeSound: {fileID: 8300000, guid: 86ebfbe1dcd128541b20370b7d3e6f73, type: 3}
+  footstepSounds: {fileID: 8300000, guid: e8b2a3dced09da34aac5a78596a5943a, type: 3}
+  landSound: {fileID: 8300000, guid: 667ceb6fd1a8f7848af4a913bc89fe49, type: 3}
+  ambientSound: {fileID: 8300000, guid: 78b60a1b279097e4cbc6ed4c8af69224, type: 3}
+--- !u!4 &758511504
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 758511501}
+  m_LocalRotation: {x: -0, y: -0.5, z: -0, w: 0.8660254}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1494605404}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &760177934
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -36727,6 +36781,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 757053993}
+  - {fileID: 758511504}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 60, z: 0}
@@ -42342,6 +42397,21 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 7b057cc9bf79bb84ea654777543f20a9, type: 2}
+    - target: {fileID: 5111276610048661990, guid: 3e215e26b88e9b344921685f05dc042e,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.53
+      objectReference: {fileID: 0}
+    - target: {fileID: 5111276610048661990, guid: 3e215e26b88e9b344921685f05dc042e,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.29
+      objectReference: {fileID: 0}
+    - target: {fileID: 5111276610048661990, guid: 3e215e26b88e9b344921685f05dc042e,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.943
+      objectReference: {fileID: 0}
     - target: {fileID: 6743049690902322743, guid: 3e215e26b88e9b344921685f05dc042e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -47117,6 +47187,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -2.659
+      objectReference: {fileID: 0}
+    - target: {fileID: -7386940559337942392, guid: ce775150f1faabc4ab4af01f64f06c0f,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.03
+      objectReference: {fileID: 0}
+    - target: {fileID: -7386940559337942392, guid: ce775150f1faabc4ab4af01f64f06c0f,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.04
       objectReference: {fileID: 0}
     - target: {fileID: -7322399647580210113, guid: ce775150f1faabc4ab4af01f64f06c0f,
         type: 3}

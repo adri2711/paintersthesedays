@@ -93,6 +93,7 @@ public class PaletteObject : MonoBehaviour
                     AddPaintToMix(paintChunk.paint, Mathf.Max(1f / _mixerPaintChunk.timesMixed, 0.15f));
                     UpdatePaintMixMaterial();
                 }
+                SoundManager.Instance.MixPaintSound();
             }
             else
             {
@@ -102,6 +103,7 @@ public class PaletteObject : MonoBehaviour
                     if (!paintChunk.paint.IsPrimary())
                     {
                         _paints.Remove(paintChunk.paint);
+                        SoundManager.Instance.WaterSound();
                         GeneratePaintChunks();
                     }
                 }
@@ -109,12 +111,14 @@ public class PaletteObject : MonoBehaviour
                 {
                     _paintingController.SetSelectedBrushPaint(paintChunk.paint);
                     _brushObject.SetPaint(paintChunk.paint);
+                    SoundManager.Instance.SelectPaintSound();
                 }
             }
         }
         else if (paletteGlass != null)
         {
             erase = true;
+            SoundManager.Instance.WaterSplashSound();
         }
         else return;
         StartCoroutine(ClickDelay(0.2f));
