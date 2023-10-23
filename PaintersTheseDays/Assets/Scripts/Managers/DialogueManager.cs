@@ -25,6 +25,8 @@ namespace Managers
         [SerializeField] private TextMeshProUGUI _nameText;
         [SerializeField] private TextMeshProUGUI _dialogueText;
 
+        private Coroutine typeSentenceCoroutine;
+
         private FirstPersonController _player;
 
         private Queue<string> _sentences;
@@ -126,7 +128,7 @@ namespace Managers
 
                 foreach (DialoguePosOption posOption in _dialogueContent.sentencesPosOptions)
                 {
-                    if (_dialogue.chosenOptions[^1].ToString() == posOption.selectedOptionNumber)
+                    if (_optionSelected.ToString() == posOption.selectedOptionNumber)
                     {
                         LoadSentences(posOption.sentences);
                         break;
@@ -240,6 +242,8 @@ namespace Managers
                         e.Activate();
                     }
                     QuestManager.Instance.FinishQuest();
+                    _currentTrigger.finished = true;
+                    _currentTrigger.active = false;
                     _sentences.Clear();
                 }
                 else
@@ -265,7 +269,11 @@ namespace Managers
                 }
             }
 
-            StartCoroutine(TypeSentence(sentence, 0.03f));
+            if (typeSentenceCoroutine != null)
+            {
+                StopCoroutine(typeSentenceCoroutine);
+            }
+            typeSentenceCoroutine = StartCoroutine(TypeSentence(sentence, 0.03f));
         }
 
         private void DisplayOptions()
@@ -311,8 +319,8 @@ namespace Managers
             {
                 _dialogueOptions[i].gameObject.SetActive(false);           
             }
-            
-            SaveDialogueToJSON();
+            _dialogue.chosenOptions = "";
+            //SaveDialogueToJSON();
         }
 
         private void SaveDialogueToJSON(bool async = false)

@@ -1,5 +1,6 @@
 using Managers;
 using NoMonoBehaviourClasses;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -13,6 +14,7 @@ public class QuestManager : MonoBehaviour
     public static QuestManager Instance => _instance;
     private const string QUEST_JSON_FILE = "/Quests/";
     public SpotQuest activeQuest;
+    public QuestPoint questPoint;
 
     private void Awake()
     {
@@ -37,6 +39,7 @@ public class QuestManager : MonoBehaviour
 
     public void FinishQuest()
     {
+        Destroy(questPoint.gameObject);
         activeQuest = null;
         FirstPersonController.paintingSave = null;
     }
@@ -44,9 +47,10 @@ public class QuestManager : MonoBehaviour
     private void SpawnSpotQuest(SpotQuest quest)
     {
         if (quest == null) return;
-        Object q = Resources.Load<Object>("Prefab/QuestPoint");
-        QuestPoint qp = Instantiate(q, quest.position, Quaternion.Euler(0f, quest.yRotation, 0f)).GetComponent<QuestPoint>();
-        qp.SetQuest(quest);
+        if (questPoint != null) Destroy(questPoint.gameObject);
+        GameObject q = Resources.Load<GameObject>("Prefab/QuestPoint");
+        questPoint = Instantiate(q, quest.position, Quaternion.Euler(0f, quest.yRotation, 0f)).GetComponent<QuestPoint>();
+        questPoint.SetQuest(quest);
     }
 
     private SpotQuest LoadQuestFromJSON(string questName)
