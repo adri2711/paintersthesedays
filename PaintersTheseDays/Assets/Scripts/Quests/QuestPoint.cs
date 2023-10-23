@@ -186,7 +186,10 @@ public class QuestPoint : MonoBehaviour
         questActive = false;
         particles.Play();
         particles.transform.Find("LineParticles").GetComponent<ParticleSystem>().Stop();
-        ValidatePainting(FirstPersonController.paintingSave);
+        if (player.canPlaceCanvas)
+        {
+            ValidatePainting(FirstPersonController.paintingSave);
+        }
     }
     
     private void ActiveLoop()

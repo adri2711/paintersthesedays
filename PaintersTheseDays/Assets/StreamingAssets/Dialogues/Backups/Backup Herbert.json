@@ -1,6 +1,7 @@
 {
-  "successfulSentence": "Not bad. I sense that something changed in spirit island, have a look around.",
-  "failedSentence": "This sucks.",
+  "successfulSentence": "Not bad. I sense that something changed nearby, have a look around.",
+  "failedSentence": "This painting sucks.",
+  "waitingSentence": "What are you waiting for? You can see the point from that tall hill.",
   "dialogueContent": 
   [
     {

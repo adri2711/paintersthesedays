@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UniRx;
 using UniRx.Triggers;
 using Unity.VisualScripting;
@@ -23,6 +24,7 @@ public class PaletteObject : MonoBehaviour
     private bool _canClick = true;
     public static bool erase = false;
     private bool _active = false;
+    private bool _questPalette = false;
 
     void Start()
     {
@@ -91,6 +93,7 @@ public class PaletteObject : MonoBehaviour
                     AddPaintToMix(paintChunk.paint, Mathf.Max(1f / _mixerPaintChunk.timesMixed, 0.15f));
                     UpdatePaintMixMaterial();
                 }
+                SoundManager.Instance.MixPaintSound();
             }
             else
             {
@@ -100,6 +103,7 @@ public class PaletteObject : MonoBehaviour
                     if (!paintChunk.paint.IsPrimary())
                     {
                         _paints.Remove(paintChunk.paint);
+                        SoundManager.Instance.WaterSound();
                         GeneratePaintChunks();
                     }
                 }
@@ -107,12 +111,14 @@ public class PaletteObject : MonoBehaviour
                 {
                     _paintingController.SetSelectedBrushPaint(paintChunk.paint);
                     _brushObject.SetPaint(paintChunk.paint);
+                    SoundManager.Instance.SelectPaintSound();
                 }
             }
         }
         else if (paletteGlass != null)
         {
             erase = true;
+            SoundManager.Instance.WaterSplashSound();
         }
         else return;
         StartCoroutine(ClickDelay(0.2f));
@@ -161,7 +167,18 @@ public class PaletteObject : MonoBehaviour
         _model.enabled = true;
         erase = false;
         _model.GetComponent<Animator>().Play("Show");
-        if (_paintChunks.Count == 0) GeneratePaintChunks();
+        if (QuestManager.Instance.activeQuest != null)
+        {
+            _questPalette = true;
+            _paints = QuestManager.Instance.activeQuest.paints.ToList();
+        }
+        else if (_questPalette)
+        {
+            _questPalette = false;
+            SetPaints(new Color[] { Color.cyan, Color.yellow, Color.magenta, Color.black, Color.white }, true);
+        }
+        else if (_paintChunks.Count > 0) return;
+        GeneratePaintChunks();
     }
     private void Deactivate()
     {

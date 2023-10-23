@@ -19,13 +19,16 @@ namespace Managers
         private const string DIALOGUE_JSON_FILE = "/Dialogues/";
 
         [SerializeField] private UnityEngine.Canvas _canvas;
-        
         [SerializeField] private TextMeshProUGUI[] _dialogueOptions;
         [SerializeField] private Image[] _arrows;
         
         [SerializeField] private TextMeshProUGUI _nameText;
         [SerializeField] private TextMeshProUGUI _dialogueText;
-        
+
+        private Coroutine typeSentenceCoroutine;
+
+        private FirstPersonController _player;
+
         private Queue<string> _sentences;
         
         private Queue<DialogueOption> _options;
@@ -83,6 +86,7 @@ namespace Managers
         {
             _sentences = new Queue<string>();
             _options = new Queue<DialogueOption>();
+            _player = GameObject.Find("Player").GetComponent<FirstPersonController>();
         }
 
         private void Update()
@@ -124,7 +128,7 @@ namespace Managers
 
                 foreach (DialoguePosOption posOption in _dialogueContent.sentencesPosOptions)
                 {
-                    if (_dialogue.chosenOptions[^1].ToString() == posOption.selectedOptionNumber)
+                    if (_optionSelected.ToString() == posOption.selectedOptionNumber)
                     {
                         LoadSentences(posOption.sentences);
                         break;
@@ -224,7 +228,11 @@ namespace Managers
                     EndDialogue();
                     return;
                 }
-                if (QuestManager.Instance.activeQuest.valid)
+                if (!_player.canPlaceCanvas || FirstPersonController.paintingSave == null)
+                {
+                    sentence = _dialogue.waitingSentence;
+                }
+                else if (QuestManager.Instance.activeQuest.valid)
                 {
                     sentence = _dialogue.successfulSentence;
                     _waitForQuest = false;
@@ -234,6 +242,8 @@ namespace Managers
                         e.Activate();
                     }
                     QuestManager.Instance.FinishQuest();
+                    _currentTrigger.finished = true;
+                    _currentTrigger.active = false;
                     _sentences.Clear();
                 }
                 else
@@ -259,7 +269,11 @@ namespace Managers
                 }
             }
 
-            StartCoroutine(TypeSentence(sentence, 0.03f));
+            if (typeSentenceCoroutine != null)
+            {
+                StopCoroutine(typeSentenceCoroutine);
+            }
+            typeSentenceCoroutine = StartCoroutine(TypeSentence(sentence, 0.03f));
         }
 
         private void DisplayOptions()
@@ -305,8 +319,8 @@ namespace Managers
             {
                 _dialogueOptions[i].gameObject.SetActive(false);           
             }
-            
-            SaveDialogueToJSON();
+            _dialogue.chosenOptions = "";
+            //SaveDialogueToJSON();
         }
 
         private void SaveDialogueToJSON(bool async = false)

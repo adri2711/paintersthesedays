@@ -9,6 +9,9 @@ public class DialogueTrigger : MonoBehaviour
     [SerializeField] private Dialogue _dialogue;
 
     [SerializeField] private string _speakerName;
+    public bool active = false;
+    public bool finished = false;
+    private bool ranEvent = false;
 
     private DialogueManager _dialogueManager;
 
@@ -40,6 +43,19 @@ public class DialogueTrigger : MonoBehaviour
             return;
         }
 
+        if (finished) return;
+        if (!active)
+        {
+            if (QuestManager.Instance.questPoint != null)
+            {
+                return;
+            }
+            else
+            {
+                active = true;
+            }
+        }
+
         _dialogueManager.GetCanvas().gameObject.SetActive(true);
 
         _dialogueManager.StartDialogue(this, _dialogue, _speakerName);
@@ -50,6 +66,19 @@ public class DialogueTrigger : MonoBehaviour
         if (collider.gameObject.layer != PLAYER_LAYER)
         {
             return;
+        }
+        if (active)
+        {
+            if (QuestManager.Instance.questPoint == null)
+            {
+                active = false;
+            }
+            else if (!ranEvent)
+            {
+                ranEvent = true;
+                QuestStartEvent e = GetComponent<QuestStartEvent>();
+                if (e != null) e.Activate();
+            }
         }
 
         _dialogueManager.GetCanvas().gameObject.SetActive(false);

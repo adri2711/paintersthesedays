@@ -1,0 +1,62 @@
+{
+  "successfulSentence": "Such expressiveness! Unparalelled creativity! I'm glad I got to share this moment with you.",
+  "failedSentence": "Come on, I'm sure you can do better than that.",
+  "waitingSentence": "Show me how you see this landscape.",
+  "dialogueContent": 
+  [
+    {
+      "chosenOptionsSequenceNeeded": "",
+      "sentences": 
+        [
+          "Oh, hi there! It's been a while since I last met anyone new here.",
+          "Let's get to know each other!",
+          "What do you like the most, crispy cold or toasty warmth?"
+        ],
+      "sentencesPosOptions": 
+      [
+        {
+          "sentences":
+          [
+            "Interesting! Since you're such a cool artist, why don't you paint a nice and chilly portrait of this landscape?"
+          ],
+          "selectedOptionNumber": "0"
+        }, 
+        {
+          "sentences":
+          [
+            "Interesting! Since you're a smoking hot artist, why don't you paint a nice and warm portrait of this landscape?"
+          ],
+          "selectedOptionNumber": "1"
+        }
+      ],
+      "dialogueOptions": 
+      [
+        {
+          "option": "Cold!",
+          "optionNumber": "0",
+          "questToGive": "democold"
+        },
+        {
+          "option": "Warmth!",
+          "optionNumber": "1",
+          "questToGive": "demowarm"
+        }
+      ]
+    }, 
+    {
+      "chosenOptionsSequenceNeeded": "0",
+      "sentences": 
+      [
+        "Today was great!"
+      ],
+      "dialogueOptions": 
+      [
+        {
+          "option": "Edward",
+          "optionNumber": "0"
+        }
+      ]
+    }
+  ],
+  "chosenOptions": ""
+}

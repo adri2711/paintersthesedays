@@ -7,6 +7,7 @@ namespace NoMonoBehaviourClasses
     public class Dialogue
     {
         public DialogueContent[] dialogueContent;
+        public string waitingSentence;
         public string successfulSentence;
         public string failedSentence;
 
